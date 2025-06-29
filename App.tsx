@@ -1,4 +1,4 @@
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DarkTheme as NavigationDarkTheme, DefaultTheme as NavigationDefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StyleSheet } from 'react-native';
 import { SafeAreaProvider } from "react-native-safe-area-context"
@@ -83,7 +83,7 @@ export default function App() {
     }}>
       <SafeAreaProvider style={[styles.container, darkMode && styles.darkContainer]}>
         <Toaster theme={darkMode ? 'dark' : 'light'} />
-        <NavigationContainer theme={darkMode ? DarkTheme : LightTheme}>
+        <NavigationContainer theme={darkMode ? NavigationDarkTheme : NavigationDefaultTheme}>
           <RootStack />
         </NavigationContainer>
       </SafeAreaProvider>
@@ -91,31 +91,6 @@ export default function App() {
   );
 }
 
-// تعريف السمات
-const LightTheme = {
-  dark: false,
-  colors: {
-    primary: '#3498db',
-    background: '#f9f9f9',
-    card: '#ffffff',
-    text: '#333333',
-    border: '#eeeeee',
-    notification: '#e74c3c',
-  },
-};
-
-const DarkTheme = {
-  dark: true,
-  colors: {
-    primary: '#3498db',
-    background: '#121212',
-    card: '#1e1e1e',
-    text: '#ffffff',
-    border: '#333333',
-    notification: '#e74c3c',
-  },
-};
-  
 const styles = StyleSheet.create({
   container: {
     flex: 1,
