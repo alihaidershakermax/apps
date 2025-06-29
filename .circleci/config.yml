@@ -1,15 +1,24 @@
 version: 2.1
+orbs:
+  android: circleci/android@3.1.0
+  ruby: circleci/ruby@2.3.0
 jobs:
-  build:
-    machine:
-      image: cimg/android:2025.04.1
+  build-and-deploy:
+    macos:
+      xcode: 14.3.1
+    environment:
+      FL_OUTPUT_DIR: output
+      FASTLANE_LANE: deploy
     steps:
       - checkout
+      - run: bundle install
       - run:
-          name: Build Android App
-          command: ./gradlew assembleDebug
+          name: Fastlane
+          command: bundle exec fastlane $FASTLANE_LANE
+      - store_artifacts:
+          path: output
 workflows:
   version: 2
-  build:
+  build-deploy:
     jobs:
-      - build
+      - build-and-deploy
