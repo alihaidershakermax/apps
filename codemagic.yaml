@@ -12,8 +12,8 @@ workflows:
         - ~/.yarn
     scripts:
       - npm install
-      - npm install -g eas-cli
-      - npx expo prebuild --platform android || true
-      - eas build --platform android --non-interactive
+      # EAS CLI not needed for local Gradle build
+      - npx expo prebuild --platform android --no-install
+      - cd android && ./gradlew assembleRelease
     artifacts:
-      - build/**/*.aab
+      - android/app/build/outputs/apk/release/*.apk
