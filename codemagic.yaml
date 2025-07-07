@@ -1,4 +1,4 @@
-workflows:
+workworkflows:
   expo_release_android:
     name: Expo Android Release
     working_directory: .
@@ -13,6 +13,6 @@ workflows:
     scripts:
       - npm install
       - npx expo prebuild --platform android || true
-      - npx expo build:android --type app-bundle --no-publish --non-interactive
+      - eas build --platform android --non-interactive
     artifacts:
       - build/**/*.aab
