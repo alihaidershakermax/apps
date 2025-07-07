@@ -13,6 +13,6 @@ workflows:
     scripts:
       - npm install
       - npx expo prebuild --platform android || true
-      - eas build --platform android --non-interactive
+      - npx eas build --platform android --non-interactive
     artifacts:
       - build/**/*.aab
