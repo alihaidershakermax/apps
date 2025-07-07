@@ -6,12 +6,12 @@ workflows:
       vars:
         EXPO_CLI_VERSION: 7
       node: 20.11.0
-      # yarn_cache: true  ❌ احذف هذا السطر
-    cache:        # ✅ بديل اختياري
+     
+    cache:      
       cache_paths:
         - ~/.yarn
     scripts:
-      - yarn install --non-interactive
+      - npm ci
       - npx expo prebuild --platform android || true
       - npx expo build:android --type app-bundle --no-publish --non-interactive
     artifacts:
