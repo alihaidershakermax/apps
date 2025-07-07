@@ -11,7 +11,7 @@ workflows:
       cache_paths:
         - ~/.yarn
     scripts:
-      - yarn install --frozen-lockfile
+      - yarn install --non-interactive
       - npx expo prebuild --platform android || true
       - npx expo build:android --type app-bundle --no-publish --non-interactive
     artifacts:
