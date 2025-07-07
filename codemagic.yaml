@@ -1,4 +1,4 @@
-kflows:
+workflows:
   expo_release_android:
     name: Expo Android Release
     working_directory: .
