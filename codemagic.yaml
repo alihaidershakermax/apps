@@ -1,4 +1,4 @@
-workflows:
+kflows:
   expo_release_android:
     name: Expo Android Release
     working_directory: .
@@ -12,7 +12,8 @@ workflows:
         - ~/.yarn
     scripts:
       - npm install
+      - npm install -g eas-cli
       - npx expo prebuild --platform android || true
-      - npx eas build --platform android --non-interactive
+      - eas build --platform android --non-interactive
     artifacts:
       - build/**/*.aab
