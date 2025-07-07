@@ -4,43 +4,15 @@ workflows:
     working_directory: .
     environment:
       vars:
-        EXPO_CLI_VERSION: 7 # تأكد من توافقه مع نسخة Expo لديك
-      node: 20.11.0
-      yarn_cache: true
-    scripts:
-      - name: Install dependencies
-        script: |
-          yarn install --frozen-lockfile
-      - name: Run Expo prebuild (optional if using EAS)
-        script: |
-          npx expo prebuild --platform android || true
-      - name: Build Android AAB
-        script: |
-          npx expo build:android --type app-bundle --no-publish --non-interactive
-    artifacts:
-      - build/**/*.aab
-    publishing:
-      email:
-        recipients:
-          - your@email.com
-
-  expo_release_ios:
-    name: Expo iOS Release
-    macos_instance_type: mac_mini_m1
-    working_directory: .
-    environment:
-      vars:
         EXPO_CLI_VERSION: 7
       node: 20.11.0
-      yarn_cache: true
-      xcode: 15.3
+      # yarn_cache: true  ❌ احذف هذا السطر
+    cache:        # ✅ بديل اختياري
+      cache_paths:
+        - ~/.yarn
     scripts:
       - yarn install --frozen-lockfile
-      - npx expo prebuild --platform ios || true
-      - npx expo build:ios --type archive --no-publish --non-interactive
+      - npx expo prebuild --platform android || true
+      - npx expo build:android --type app-bundle --no-publish --non-interactive
     artifacts:
-      - build/ios/*.ipa
-    publishing:
-      email:
-        recipients:
-          - your@email.com
+      - build/**/*.aab
