@@ -1678,7 +1678,7 @@
     "@react-navigation/elements" "^2.5.2"
     warn-once "^0.1.1"
 
-"@react-navigation/native@7.1.14":
+"@react-navigation/native@^7.1.14":
   version "7.1.14"
   resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-7.1.14.tgz#6b5b57bba4c5f45bfc9961da2f921aba5215dfad"
   integrity sha512-X233/CNx41FpshlWe4uEAUN8CNem3ju4t5pnVKcdhDR0cTQT1rK6P0ZwjSylD9zXdnHvJttFjBhKTot6TcvSqA==
@@ -3722,9 +3722,9 @@ expo-asset@~11.0.5:
     md5-file "^3.2.3"
 
 expo-camera@17.2.1:
-  version "16.1.10"
-  resolved "https://registry.yarnpkg.com/expo-camera/-/expo-camera-16.1.10.tgz#56dd7abc118b4de1771e6b64739197c2277f4083"
-  integrity sha512-qoRJeSwPmMbuu0VfnQTC+q79Kt2SqTWColEImgithL9u0qUQcC55U89IfhZk55Hpt6f1DgKuDzUOG5oY+snSWg==
+  version "16.1.11-canary-20250709-136b77f"
+  resolved "https://registry.yarnpkg.com/expo-camera/-/expo-camera-16.1.11-canary-20250709-136b77f.tgz#fafbb3506faea0ec7401a9b21aaff3d1e8c22736"
+  integrity sha512-cWTvJhZJ1MOlb8ES0LwMHC6oggjvu6xSilXhDzETZmB+F518dh6Ima8802vgstDXkPCneaGKJ1vE534GBl5WJQ==
   dependencies:
     invariant "^2.2.4"
 
