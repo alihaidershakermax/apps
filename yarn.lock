@@ -3464,31 +3464,12 @@ expo-asset@~11.0.5:
     invariant "^2.2.4"
     md5-file "^3.2.3"
 
-expo-barcode-scanner-interface@^1.0.0-rc.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/expo-barcode-scanner-interface/-/expo-barcode-scanner-interface-1.1.0.tgz#37f31334b50475b34a9149f04493574c0b1fed98"
-  integrity sha512-tG+A1ZCOHyjV2QpxL0f444ye1BIwwjKT2koD+V/uf+HfWZKOJkTqcrHqGoRj7nWJArSY60zKX5hny7ZcN5IUGQ==
-
-expo-camera-interface@^1.0.2-rc.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/expo-camera-interface/-/expo-camera-interface-1.1.0.tgz#60b1e9c0a7ce68726929cd1504a61caa0b81ff65"
-  integrity sha512-qHgGc/JVfFsSFFIsdbnTo6o6kV0sYQ3TuNxLXoWRUGq8/h2U8R4dExPlugSw698Wg9MUtG0mpez1ZcjwWkO/Sg==
-  dependencies:
-    expo-core "~1.2.0"
-
 expo-camera@17.2.1:
-  version "1.1.0-rc.1"
-  resolved "https://registry.yarnpkg.com/expo-camera/-/expo-camera-1.1.0-rc.1.tgz#091d394efc56a2567b522ffc086dfbd96528fb30"
-  integrity sha512-DfcTqmWo/H2Xf5YsuKiyrYjKmfMIlQB3bpqosgxX07Yd0gKS4C0XL97V+Eub0MSJTXx83dDxZS68btRahVujXA==
+  version "16.1.10"
+  resolved "https://registry.yarnpkg.com/expo-camera/-/expo-camera-16.1.10.tgz#56dd7abc118b4de1771e6b64739197c2277f4083"
+  integrity sha512-qoRJeSwPmMbuu0VfnQTC+q79Kt2SqTWColEImgithL9u0qUQcC55U89IfhZk55Hpt6f1DgKuDzUOG5oY+snSWg==
   dependencies:
-    expo-barcode-scanner-interface "^1.0.0-rc.0"
-    expo-camera-interface "^1.0.2-rc.0"
-    expo-core "^1.1.0-rc.1"
-    expo-face-detector-interface "^1.0.2-rc.0"
-    expo-file-system-interface "^1.0.2-rc.0"
-    expo-permissions-interface "^1.1.0-rc.0"
-    lodash.mapvalues "^4.6.0"
-    prop-types "^15.6.0"
+    invariant "^2.2.4"
 
 expo-constants@~17.0.8:
   version "17.0.8"
@@ -3497,25 +3478,6 @@ expo-constants@~17.0.8:
   dependencies:
     "@expo/config" "~10.0.11"
     "@expo/env" "~0.4.2"
-
-expo-core@^1.1.0-rc.1, expo-core@~1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/expo-core/-/expo-core-1.2.0.tgz#c8fecf18b36a5b583bcb69a0227d4a6e45b56f17"
-  integrity sha512-EbfgL/NPIROzY+Vvmuo2teUqSo8FEdFSZm3dyUcCTEV8jXioTCyJNpsH3G3cTI2U7nxn84SxoB6BvEzWdQyu4Q==
-
-expo-face-detector-interface@^1.0.2-rc.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/expo-face-detector-interface/-/expo-face-detector-interface-1.1.0.tgz#34157daea239da785b1a9e239ff064232c88046c"
-  integrity sha512-D2191Y7p9+gOObMv4E0b+h+xQkmCJe2g7MXvgeCsIOr/4VZCHd8B4fVV6xb8bLCBT7PeOSqo82RAz7nPXjHNdA==
-  dependencies:
-    expo-core "~1.2.0"
-
-expo-file-system-interface@^1.0.2-rc.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/expo-file-system-interface/-/expo-file-system-interface-1.1.0.tgz#167fc9d11992b9024ab990a1e90ed4c110f8cfb0"
-  integrity sha512-16iEsif9o7w2OeT8zyi7yf0KioHio0QmyCH73FM6FhbNxkoQznrlKWLkMafcmaQdBShFWATKer3/21qlaeFqCQ==
-  dependencies:
-    expo-core "~1.2.0"
 
 expo-file-system@~18.0.12:
   version "18.0.12"
@@ -3561,13 +3523,6 @@ expo-modules-core@2.2.3:
   integrity sha512-01QqZzpP/wWlxnNly4G06MsOBUTbMDj02DQigZoXfDh80vd/rk3/uVXqnZgOdLSggTs6DnvOgAUy0H2q30XdUg==
   dependencies:
     invariant "^2.2.4"
-
-expo-permissions-interface@^1.1.0-rc.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/expo-permissions-interface/-/expo-permissions-interface-1.2.0.tgz#9c65f66f3ff90f2f9ed79d9292ec3c788ae9b85e"
-  integrity sha512-hHduXuB0+hSymex0ZTJWjlTJffmHt2cEZGLorhwM51r082oudurrpfed7sjGqKu9wSM6TeAjPG3UaLvyWVG/dQ==
-  dependencies:
-    expo-core "~1.2.0"
 
 expo@^52.0.46:
   version "52.0.47"
@@ -4902,11 +4857,6 @@ lodash.debounce@^4.0.8:
   resolved "https://registry.yarnpkg.com/lodash.debounce/-/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af"
   integrity sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==
 
-lodash.mapvalues@^4.6.0:
-  version "4.6.0"
-  resolved "https://registry.yarnpkg.com/lodash.mapvalues/-/lodash.mapvalues-4.6.0.tgz#1bafa5005de9dd6f4f26668c30ca37230cc9689c"
-  integrity sha512-JPFqXFeZQ7BfS00H58kClY7SPVeHertPE0lNuCyZ26/XlN8TvakYD7b9bGyNmXbT/D3BbtPAAmq90gPWqLkxlQ==
-
 lodash.merge@^4.6.2:
   version "4.6.2"
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
@@ -5863,7 +5813,7 @@ prompts@^2.3.2:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.6.0, prop-types@^15.8.1:
+prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
