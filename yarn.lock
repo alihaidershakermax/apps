@@ -1409,6 +1409,13 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
+"@koale/useworker@^4.0.2":
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/@koale/useworker/-/useworker-4.1.2.tgz#c8c36abe81b4d149c00e1e5381c3e761b5f48e47"
+  integrity sha512-rVS9qs5prEBBw1YnvBlIN/jc1MLbchtv54mI1OGH8rQrE1jYfXg2+1p+4O5vFcU96cy2dafosnwZw8HXDpY//w==
+  dependencies:
+    dequal "^2.0.3"
+
 "@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1":
   version "5.1.1-v1"
   resolved "https://registry.yarnpkg.com/@nicolo-ribaudo/eslint-scope-5-internals/-/eslint-scope-5-internals-5.1.1-v1.tgz#dbf733a965ca47b1973177dc0bb6c889edcfb129"
@@ -3164,6 +3171,11 @@ depd@2.0.0:
   resolved "https://registry.yarnpkg.com/depd/-/depd-2.0.0.tgz#b696163cc757560d09cf22cc8fad1571b79e76df"
   integrity sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==
 
+dequal@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/dequal/-/dequal-2.0.3.tgz#2644214f1997d39ed0ee0ece72335490a7ac67be"
+  integrity sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==
+
 destroy@1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/destroy/-/destroy-1.2.0.tgz#4803735509ad8be552934c67df614f94e66fa015"
@@ -3722,10 +3734,11 @@ expo-asset@~11.0.5:
     md5-file "^3.2.3"
 
 expo-camera@17.2.1:
-  version "16.1.11-canary-20250709-136b77f"
-  resolved "https://registry.yarnpkg.com/expo-camera/-/expo-camera-16.1.11-canary-20250709-136b77f.tgz#fafbb3506faea0ec7401a9b21aaff3d1e8c22736"
-  integrity sha512-cWTvJhZJ1MOlb8ES0LwMHC6oggjvu6xSilXhDzETZmB+F518dh6Ima8802vgstDXkPCneaGKJ1vE534GBl5WJQ==
+  version "13.2.1"
+  resolved "https://registry.yarnpkg.com/expo-camera/-/expo-camera-13.2.1.tgz#bfd1e2248d10a5da43d43a4cc77e378e5acf25bb"
+  integrity sha512-fZdRyF402jJGGmLVlumrLcr5Em9+Y2SO1MIlxLBtHXnybyHbTRMRAbzVapKX1Aryfujqadh+Kl+sdsWYkMuJjg==
   dependencies:
+    "@koale/useworker" "^4.0.2"
     invariant "^2.2.4"
 
 expo-constants@~17.0.8:
