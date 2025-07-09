@@ -190,112 +190,112 @@ export default function ChapterManagementScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
+  actionButton: {
+    marginLeft: 10,
+    padding: 5,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  addButton: {
     alignItems: 'center',
-    padding: 15,
-    borderBottomWidth: 1,
+    backgroundColor: '#3498db',
+    borderRadius: 8,
+    height: 40,
+    justifyContent: 'center',
+    width: 40,
+  },
+  addChapterContainer: {
     borderBottomColor: '#eee',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    padding: 15,
   },
   backButton: {
     padding: 5,
   },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  addChapterContainer: {
-    flexDirection: 'row',
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  input: {
-    flex: 1,
-    height: 40,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    marginRight: 10,
-    textAlign: 'right',
-  },
-  addButton: {
-    width: 40,
-    height: 40,
-    backgroundColor: '#3498db',
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  chaptersList: {
-    flex: 1,
-  },
-  chapterItem: {
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  chapterContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  chapterInfo: {
-    flex: 1,
-  },
-  chapterTitle: {
-    fontSize: 16,
-    color: '#333',
-    marginBottom: 5,
-  },
-  pageCount: {
-    fontSize: 14,
-    color: '#666',
+  cancelButton: {
+    backgroundColor: '#e74c3c',
   },
   chapterActions: {
     flexDirection: 'row',
   },
-  actionButton: {
-    padding: 5,
-    marginLeft: 10,
+  chapterContent: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  chapterInfo: {
+    flex: 1,
+  },
+  chapterItem: {
+    borderBottomColor: '#eee',
+    borderBottomWidth: 1,
+    padding: 15,
+  },
+  chapterTitle: {
+    color: '#333',
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  chaptersList: {
+    flex: 1,
+  },
+  container: {
+    backgroundColor: '#fff',
+    flex: 1,
   },
   disabledButton: {
     opacity: 0.5,
-  },
-  editContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  editInput: {
-    flex: 1,
-    height: 40,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    marginRight: 10,
-    textAlign: 'right',
   },
   editActions: {
     flexDirection: 'row',
   },
   editButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 8,
-    justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 8,
+    height: 40,
+    justifyContent: 'center',
     marginLeft: 5,
+    width: 40,
+  },
+  editContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  editInput: {
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+    flex: 1,
+    height: 40,
+    marginRight: 10,
+    paddingHorizontal: 15,
+    textAlign: 'right',
+  },
+  header: {
+    alignItems: 'center',
+    borderBottomColor: '#eee',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 15,
+  },
+  headerTitle: {
+    color: '#333',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  input: {
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+    flex: 1,
+    height: 40,
+    marginRight: 10,
+    paddingHorizontal: 15,
+    textAlign: 'right',
+  },
+  pageCount: {
+    color: '#666',
+    fontSize: 14,
   },
   saveButton: {
     backgroundColor: '#2ecc71',
-  },
-  cancelButton: {
-    backgroundColor: '#e74c3c',
   },
 });

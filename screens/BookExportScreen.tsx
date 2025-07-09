@@ -1,11 +1,22 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Switch, SafeAreaView, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+  Image,
+  Switch,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { toast } from 'sonner-native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RouteProp } from '@react-navigation/native';
-import { RootStackParamList, Book, ExportFormat, ExportDestination, IonIconName } from '../types';
+import { RootStackParamList, Book, ExportFormat, ExportDestination } from '../types';
+import { bookData } from '../data/books';
 
 type BookExportScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'BookExport'>;
 type BookExportScreenRouteProp = RouteProp<RootStackParamList, 'BookExport'>;
@@ -25,9 +36,6 @@ const exportDestinations: ExportDestination[] = [
   { id: 'telegram', name: 'تليجرام', icon: 'paper-plane-outline' },
   { id: 'drive', name: 'Google Drive', icon: 'cloud-upload-outline' },
 ];
-
-// Import the book data
-import { bookData } from '../data/books';
 
 export default function BookExportScreen() {
   const navigation = useNavigation<BookExportScreenNavigationProp>();
@@ -261,199 +269,196 @@ export default function BookExportScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f9f9f9',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingVertical: 15,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
   backButton: {
     padding: 5,
   },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  content: {
-    flex: 1,
-    padding: 15,
-  },
-  bookInfoContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  bookCoverContainer: {
-    width: 80,
-    height: 120,
-    borderRadius: 5,
-    overflow: 'hidden',
-    marginRight: 15,
+  bookAuthor: {
+    color: '#666',
+    fontSize: 14,
+    marginBottom: 10,
+    textAlign: 'right',
   },
   bookCover: {
-    width: '100%',
     height: '100%',
+    width: '100%',
+  },
+  bookCoverContainer: {
+    borderRadius: 5,
+    height: 120,
+    marginRight: 15,
+    overflow: 'hidden',
+    width: 80,
   },
   bookInfo: {
     flex: 1,
     justifyContent: 'center',
   },
-  bookTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 5,
-    textAlign: 'right',
-  },
-  bookAuthor: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 10,
-    textAlign: 'right',
-  },
-  bookStats: {
-    fontSize: 14,
-    color: '#3498db',
-    textAlign: 'right',
-  },
-  section: {
+  bookInfoContainer: {
     backgroundColor: '#fff',
     borderRadius: 10,
-    padding: 15,
+    elevation: 2,
+    flexDirection: 'row',
     marginBottom: 20,
+    padding: 15,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
-    elevation: 2,
   },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 15,
+  bookStats: {
+    color: '#3498db',
+    fontSize: 14,
     textAlign: 'right',
   },
-  formatOptions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  bookTitle: {
+    color: '#333',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    textAlign: 'right',
   },
-  formatOption: {
+  container: {
+    backgroundColor: '#f9f9f9',
     flex: 1,
+  },
+  content: {
+    flex: 1,
+    padding: 15,
+  },
+  destinationName: {
+    color: '#666',
+    fontSize: 14,
+    marginLeft: 10,
+  },
+  destinationOption: {
     alignItems: 'center',
-    padding: 10,
+    borderColor: '#ddd',
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: '#ddd',
-    marginHorizontal: 5,
-  },
-  selectedFormatOption: {
-    backgroundColor: '#3498db',
-    borderColor: '#3498db',
-  },
-  formatName: {
-    marginTop: 5,
-    fontSize: 14,
-    color: '#333',
-  },
-  selectedFormatName: {
-    color: '#fff',
+    flexDirection: 'row',
+    marginBottom: 10,
+    padding: 12,
+    width: '48%',
   },
   destinationOptions: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
   },
-  destinationOption: {
-    width: '48%',
-    flexDirection: 'row',
+  exportButton: {
     alignItems: 'center',
-    padding: 12,
+    backgroundColor: '#3498db',
+    borderRadius: 5,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingVertical: 12,
+  },
+  exportButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  exportContainer: {
+    backgroundColor: '#fff',
+    borderTopColor: '#eee',
+    borderTopWidth: 1,
+    padding: 15,
+  },
+  formatName: {
+    color: '#333',
+    fontSize: 14,
+    marginTop: 5,
+  },
+  formatOption: {
+    alignItems: 'center',
+    borderColor: '#ddd',
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: '#ddd',
-    marginBottom: 10,
+    flex: 1,
+    marginHorizontal: 5,
+    padding: 10,
   },
-  selectedDestinationOption: {
-    borderColor: '#3498db',
-    backgroundColor: '#f0f8ff',
+  formatOptions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  destinationName: {
-    marginLeft: 10,
+  header: {
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderBottomColor: '#eee',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 15,
+    paddingVertical: 15,
+  },
+  headerTitle: {
+    color: '#333',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  optionDescription: {
+    color: '#999',
     fontSize: 14,
-    color: '#666',
+    textAlign: 'right',
+  },
+  optionInfo: {
+    flex: 1,
+  },
+  optionItem: {
+    alignItems: 'center',
+    borderBottomColor: '#eee',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+  },
+  optionTitle: {
+    color: '#333',
+    fontSize: 16,
+    textAlign: 'right',
+  },
+  previewContainer: {
+    borderRadius: 5,
+    height: 150,
+    overflow: 'hidden',
+    width: '100%',
+  },
+  previewImage: {
+    height: '100%',
+    width: '100%',
+  },
+  section: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    elevation: 2,
+    marginBottom: 20,
+    padding: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  sectionTitle: {
+    color: '#333',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'right',
   },
   selectedDestinationName: {
     color: '#3498db',
     fontWeight: 'bold',
   },
-  optionItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+  selectedDestinationOption: {
+    backgroundColor: '#f0f8ff',
+    borderColor: '#3498db',
   },
-  optionInfo: {
-    flex: 1,
-  },
-  optionTitle: {
-    fontSize: 16,
-    color: '#333',
-    textAlign: 'right',
-  },
-  optionDescription: {
-    fontSize: 14,
-    color: '#999',
-    textAlign: 'right',
-  },
-  previewContainer: {
-    width: '100%',
-    height: 150,
-    borderRadius: 5,
-    overflow: 'hidden',
-  },
-  previewImage: {
-    width: '100%',
-    height: '100%',
-  },
-  exportContainer: {
-    padding: 15,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-  },
-  exportButton: {
-    backgroundColor: '#3498db',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderRadius: 5,
-  },
-  exportIcon: {
-    marginRight: 10,
-  },
-  exportButtonText: {
+  selectedFormatName: {
     color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
+  },
+  selectedFormatOption: {
+    backgroundColor: '#3498db',
+    borderColor: '#3498db',
   },
 });

@@ -121,92 +121,92 @@ export default function EntryDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
   backButton: {
     padding: 5,
   },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  optionsButton: {
-    padding: 5,
-  },
-  optionsMenu: {
-    position: 'absolute',
-    top: 60,
-    right: 15,
+  container: {
     backgroundColor: '#fff',
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
-    zIndex: 10,
-  },
-  optionItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  optionText: {
-    marginLeft: 10,
-    fontSize: 16,
-    color: '#333',
+    flex: 1,
   },
   content: {
     flex: 1,
     padding: 15,
   },
-  entryHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
   date: {
+    color: '#666',
     fontSize: 16,
-    color: '#666',
-  },
-  moodContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  moodIndicator: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginRight: 5,
-  },
-  moodText: {
-    fontSize: 14,
-    color: '#666',
-  },
-  image: {
-    width: '100%',
-    height: 200,
-    borderRadius: 8,
-    marginBottom: 15,
   },
   entryContent: {
+    color: '#333',
     fontSize: 16,
     lineHeight: 24,
-    color: '#333',
     textAlign: 'right',
+  },
+  entryHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+  },
+  header: {
+    alignItems: 'center',
+    borderBottomColor: '#eee',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 15,
+  },
+  headerTitle: {
+    color: '#333',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  image: {
+    borderRadius: 8,
+    height: 200,
+    marginBottom: 15,
+    width: '100%',
+  },
+  moodContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  moodIndicator: {
+    borderRadius: 5,
+    height: 10,
+    marginRight: 5,
+    width: 10,
+  },
+  moodText: {
+    color: '#666',
+    fontSize: 14,
+  },
+  optionItem: {
+    alignItems: 'center',
+    borderBottomColor: '#eee',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    padding: 12,
+  },
+  optionText: {
+    color: '#333',
+    fontSize: 16,
+    marginLeft: 10,
+  },
+  optionsButton: {
+    padding: 5,
+  },
+  optionsMenu: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    elevation: 4,
+    position: 'absolute',
+    right: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    top: 60,
+    zIndex: 10,
   },
 });

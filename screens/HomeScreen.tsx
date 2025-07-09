@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, FlatList, Dimensions } from 'react-native';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  TouchableOpacity, 
+  FlatList,
+  Image,
+  Dimensions,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { toast } from 'sonner-native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList, MaterialIconName, IonIconName } from '../types';
+import { RootStackParamList } from '../types';
+import { colors } from '../theme/colors';
+import { commonStyles } from '../theme/styles';
 
 // Get screen dimensions
 const { width } = Dimensions.get('window');
@@ -282,112 +292,90 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f9f9f9',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: '#666',
-    marginLeft: 5,
-    alignSelf: 'flex-end',
-  },
-  headerButtons: {
-    flexDirection: 'row',
-  },
-  headerButton: {
-    marginLeft: 15,
-  },
-  tabs: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    paddingHorizontal: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 15,
-    alignItems: 'center',
-  },
   activeTab: {
-    borderBottomWidth: 2,
     borderBottomColor: '#3498db',
-  },
-  tabText: {
-    fontSize: 16,
-    color: '#999',
+    borderBottomWidth: 2,
   },
   activeTabText: {
     color: '#3498db',
     fontWeight: 'bold',
   },
-  pagesList: {
-    padding: 15,
+  bookAuthor: {
+    color: '#666',
+    fontSize: 14,
+    marginTop: 2,
+    textAlign: 'center',
   },
-  pageItem: {
-    backgroundColor: '#fff',
+  bookCover: {
+    height: '100%',
+    width: '100%',
+  },
+  bookCoverContainer: {
     borderRadius: 10,
-    padding: 15,
-    marginBottom: 15,
+    elevation: 4,
+    height: ((width - 50) / 2) * 1.5,
+    overflow: 'hidden',
+    position: 'relative',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.2,
     shadowRadius: 4,
-    elevation: 2,
+    width: (width - 50) / 2,
   },
-  pageHeader: {
+  bookDate: {
+    color: '#999',
+    fontSize: 12,
+    marginTop: 5,
+    textAlign: 'center',
+  },
+  bookInfo: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    bottom: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    left: 0,
+    padding: 8,
+    position: 'absolute',
+    right: 0,
+  },
+  bookItem: {
     alignItems: 'center',
+    marginBottom: 20,
+    marginHorizontal: 5,
+    width: (width - 50) / 2,
+  },
+  bookPages: {
+    color: '#fff',
+    fontSize: 12,
+  },
+  bookProgressHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginBottom: 5,
   },
-  pageTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    textAlign: 'right',
-    flex: 1,
+  bookProgressItem: {
+    marginBottom: 15,
   },
-  pageDate: {
-    fontSize: 14,
-    color: '#999',
-    marginBottom: 10,
-    textAlign: 'right',
+  bookProgressList: {
+    width: '100%',
   },
-  pagePreview: {
-    fontSize: 16,
+  bookProgressPages: {
     color: '#666',
-    textAlign: 'right',
-    marginBottom: 10,
-  },
-  pageFooter: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-  },
-  pageBook: {
     fontSize: 14,
-    color: '#3498db',
+  },
+  bookProgressTitle: {
+    color: '#333',
+    fontSize: 16,
     fontWeight: 'bold',
+  },
+  bookTitle: {
+    color: '#333',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 10,
+    textAlign: 'center',
   },
   booksContainer: {
     flex: 1,
@@ -396,150 +384,172 @@ const styles = StyleSheet.create({
   booksList: {
     alignItems: 'center',
   },
-  bookItem: {
-    width: (width - 50) / 2,
-    marginHorizontal: 5,
-    marginBottom: 20,
-    alignItems: 'center',
-  },
-  bookCoverContainer: {
-    position: 'relative',
-    width: (width - 50) / 2,
-    height: ((width - 50) / 2) * 1.5,
-    borderRadius: 10,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  bookCover: {
-    width: '100%',
-    height: '100%',
-  },
-  bookInfo: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    padding: 8,
-  },
-  bookPages: {
-    fontSize: 12,
-    color: '#fff',
-  },
-  bookTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    textAlign: 'center',
-    marginTop: 10,
-  },
-  bookAuthor: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
-    marginTop: 2,
-  },
-  bookDate: {
-    fontSize: 12,
-    color: '#999',
-    marginTop: 5,
-    textAlign: 'center',
+  container: {
+    backgroundColor: '#f9f9f9',
+    flex: 1,
   },
   fab: {
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#3498db',
-    justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#3498db',
+    borderRadius: 28,
+    bottom: 20,
+    elevation: 5,
+    height: 56,
+    justifyContent: 'center',
+    position: 'absolute',
+    right: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
-    elevation: 5,
+    width: 56,
+  },
+  header: {
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderBottomColor: '#eee',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+  },
+  headerButton: {
+    marginLeft: 15,
+  },
+  headerButtons: {
+    flexDirection: 'row',
+  },
+  headerSubtitle: {
+    alignSelf: 'flex-end',
+    color: '#666',
+    fontSize: 14,
+    marginLeft: 5,
+  },
+  headerTitle: {
+    color: '#333',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  pageBook: {
+    color: '#3498db',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  pageDate: {
+    color: '#999',
+    fontSize: 14,
+    marginBottom: 10,
+    textAlign: 'right',
+  },
+  pageFooter: {
+    alignItems: 'center',
+    borderTopColor: '#eee',
+    borderTopWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingTop: 10,
+  },
+  pageHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 5,
+  },
+  pageItem: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    elevation: 2,
+    marginBottom: 15,
+    padding: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  pagePreview: {
+    color: '#666',
+    fontSize: 16,
+    marginBottom: 10,
+    textAlign: 'right',
+  },
+  pageTitle: {
+    color: '#333',
+    flex: 1,
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'right',
+  },
+  pagesList: {
+    padding: 15,
+  },
+  progressBar: {
+    height: '100%',
+  },
+  progressBarContainer: {
+    backgroundColor: '#eee',
+    borderRadius: 4,
+    height: 8,
+    overflow: 'hidden',
+  },
+  progressContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    elevation: 2,
+    marginTop: 10,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  progressTitle: {
+    color: '#333',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  statCard: {
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    elevation: 2,
+    marginBottom: 15,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  statLabel: {
+    color: '#666',
+    fontSize: 16,
+  },
+  statNumber: {
+    color: '#3498db',
+    fontSize: 36,
+    fontWeight: 'bold',
+    marginBottom: 5,
   },
   statsContainer: {
     flex: 1,
     padding: 20,
   },
-  statCard: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-    marginBottom: 15,
+  tab: {
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    flex: 1,
+    paddingVertical: 15,
   },
-  statNumber: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#3498db',
-    marginBottom: 5,
-  },
-  statLabel: {
+  tabText: {
+    color: '#999',
     fontSize: 16,
-    color: '#666',
   },
-  progressContainer: {
+  tabs: {
     backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-    marginTop: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  progressTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 15,
-    textAlign: 'center',
-  },
-  bookProgressList: {
-    width: '100%',
-  },
-  bookProgressItem: {
-    marginBottom: 15,
-  },
-  bookProgressHeader: {
+    borderBottomColor: '#eee',
+    borderBottomWidth: 1,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 5,
-  },
-  bookProgressTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  bookProgressPages: {
-    fontSize: 14,
-    color: '#666',
-  },
-  progressBarContainer: {
-    height: 8,
-    backgroundColor: '#eee',
-    borderRadius: 4,
-    overflow: 'hidden',
-  },
-  progressBar: {
-    height: '100%',
+    paddingHorizontal: 10,
   },
 });

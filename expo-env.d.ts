@@ -1,28 +1,18 @@
 /// <reference types="expo" />
 
-declare module "*.png" {
-  const value: any;
-  export = value;
-}
+declare module 'sonner-native' {
+  interface ToastOptions {
+    duration?: number;
+    position?: 'top' | 'bottom';
+    style?: Record<string, string | number>;
+  }
 
-declare module "*.jpg" {
-  const value: any;
-  export = value;
-}
+  interface ToastMethods {
+    success: (message: string, options?: ToastOptions) => void;
+    error: (message: string, options?: ToastOptions) => void;
+    info: (message: string, options?: ToastOptions) => void;
+    warning: (message: string, options?: ToastOptions) => void;
+  }
 
-declare module "*.jpeg" {
-  const value: any;
-  export = value;
-}
-
-declare module "*.gif" {
-  const value: any;
-  export = value;
-}
-
-declare module "*.svg" {
-  import React from "react";
-  import { SvgProps } from "react-native-svg";
-  const content: React.FC<SvgProps>;
-  export default content;
+  export const toast: ToastMethods;
 } 

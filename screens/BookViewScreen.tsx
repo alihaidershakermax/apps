@@ -1,41 +1,42 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   View, 
   Text, 
   StyleSheet, 
   TouchableOpacity, 
   ScrollView,
-  Image,
-  FlatList,
-  Dimensions
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { toast } from 'sonner-native';
-import { StyleOption, MaterialIconName, Book, Chapter, Page, RootStackParamList } from '../types';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RouteProp } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RouteProp } from '@react-navigation/native';
+import { RootStackParamList, Book, Chapter, Page } from '../types';
 import { bookData } from '../data/books';
+import { colors } from '../theme/colors';
+import { commonStyles } from '../theme/styles';
 
 type BookViewScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'BookView'>;
 type BookViewScreenRouteProp = RouteProp<RootStackParamList, 'BookView'>;
 
-// Book styles
-const bookStyles: Record<string, StyleOption> = {
-  classic: { id: 'classic', name: 'كلاسيكي', color: '#8B4513', icon: 'book' },
-  vintage: { id: 'vintage', name: 'عتيق', color: '#DAA520', icon: 'book-open-page-variant' },
-  military: { id: 'military', name: 'عسكري', color: '#556B2F', icon: 'shield' },
-  modern: { id: 'modern', name: 'عصري', color: '#2C3E50', icon: 'book-open-variant' },
-  feminine: { id: 'feminine', name: 'أنثوي', color: '#FF69B4', icon: 'flower' },
-  artistic: { id: 'artistic', name: 'فني', color: '#9B59B6', icon: 'palette' }
+// Render chapters
+const renderChapters = (chapters: Chapter[]) => {
+  return chapters.map((chapter) => (
+    <View key={chapter.id} style={styles.chapterContainer}>
+      <Text style={styles.chapterTitle}>{chapter.title}</Text>
+      {renderPages(chapter.pages)}
+    </View>
+  ));
 };
 
-// Date format options
-const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric'
+// Render pages
+const renderPages = (pages: Page[]) => {
+  return pages.map((page) => (
+    <View key={page.id} style={styles.pageContainer}>
+      <Text style={styles.pageTitle}>{page.title}</Text>
+      <Text style={styles.pageDate}>{page.date}</Text>
+      <Text style={styles.pageContent}>{page.content}</Text>
+    </View>
+  ));
 };
 
 export default function BookViewScreen() {
@@ -44,138 +45,75 @@ export default function BookViewScreen() {
   const { bookId } = route.params;
   const book = bookData[bookId] as Book;
 
-  // Get all pages across chapters
-  const allPages = book.chapters.reduce<Page[]>((pages: Page[], chapter: Chapter) => {
-    return [...pages, ...chapter.pages];
-  }, []);
-
-  // Format date
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('ar-SA', DATE_FORMAT_OPTIONS);
-  };
-
-  // Render a single page
-  const renderPage = (page: Page, index: number) => {
-    return (
-      <TouchableOpacity 
-        key={page.id} 
-        style={styles.pageItem}
-        onPress={() => navigation.navigate('EntryDetail', { entryId: page.id })}
-      >
-        <Text style={styles.pageTitle}>{page.title}</Text>
-        <Text style={styles.pageDate}>
-          {page.date && formatDate(new Date(page.date))}
-        </Text>
-        <Text style={styles.pagePreview} numberOfLines={2}>
-          {page.content}
-        </Text>
-      </TouchableOpacity>
-    );
-  };
-
-  // Render a chapter with its pages
-  const renderChapter = (chapter: Chapter, chapterIndex: number) => {
-    return (
-      <View key={chapter.id} style={styles.chapterContainer}>
-        <View style={styles.chapterHeader}>
-          <Text style={styles.chapterTitle}>
-            {chapter.title}
-          </Text>
-          <Text style={styles.chapterPageCount}>
-            {chapter.pages.length} صفحات
-          </Text>
-        </View>
-        <View style={styles.pagesContainer}>
-          {chapter.pages.map((page: Page, pageIndex: number) => renderPage(page, pageIndex))}
-        </View>
-      </View>
-    );
-  };
-
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView>
-        <View style={styles.bookHeader}>
-          <Text style={styles.bookTitleText}>{book.title}</Text>
-          <Text style={styles.bookDateText}>
-            {book.dateCreated && formatDate(new Date(book.dateCreated))}
-          </Text>
-        </View>
-        <View style={styles.chaptersContainer}>
-          {book.chapters.map((chapter: Chapter, index: number) => renderChapter(chapter, index))}
-        </View>
-        <View style={styles.pagesContainer}>
-          {allPages.map((page: Page, index: number) => renderPage(page, index))}
-        </View>
+    <SafeAreaView style={commonStyles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text style={styles.backButton}>رجوع</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>{book.title}</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('BookExport', { bookId })}>
+          <Text style={styles.exportButton}>تصدير</Text>
+        </TouchableOpacity>
+      </View>
+      <ScrollView style={styles.content}>
+        {renderChapters(book.chapters)}
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
+  header: {
+    ...commonStyles.header,
   },
-  bookHeader: {
-    padding: 15,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+  headerTitle: {
+    ...commonStyles.headerTitle,
   },
-  bookTitleText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 5,
-  },
-  bookDateText: {
+  backButton: {
+    color: colors.gray500,
     fontSize: 16,
-    color: '#666',
   },
-  chaptersContainer: {
+  exportButton: {
+    color: colors.primary,
+    fontSize: 16,
+  },
+  content: {
+    flex: 1,
     padding: 15,
   },
   chapterContainer: {
-    marginBottom: 20,
-  },
-  chapterHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
+    backgroundColor: colors.white,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.gray300,
+    padding: 15,
   },
   chapterTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
-  },
-  chapterPageCount: {
-    fontSize: 14,
-    color: '#666',
-  },
-  pagesContainer: {
-    marginTop: 10,
-  },
-  pageItem: {
-    padding: 15,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 8,
+    color: colors.gray700,
     marginBottom: 10,
+  },
+  pageContainer: {
+    backgroundColor: colors.gray100,
+    borderRadius: 8,
+    padding: 15,
+    marginVertical: 8,
   },
   pageTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#333',
+    color: colors.gray700,
     marginBottom: 5,
   },
   pageDate: {
     fontSize: 14,
-    color: '#666',
-    marginBottom: 5,
+    color: colors.gray500,
+    marginBottom: 10,
   },
-  pagePreview: {
-    fontSize: 14,
-    color: '#666',
+  pageContent: {
+    fontSize: 16,
+    color: colors.gray700,
+    lineHeight: 24,
   },
 });

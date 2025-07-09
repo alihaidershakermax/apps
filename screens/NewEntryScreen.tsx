@@ -4,20 +4,19 @@ import {
   Text, 
   StyleSheet, 
   TouchableOpacity, 
-  ScrollView, 
+  ScrollView,
   TextInput,
   Image,
-  KeyboardAvoidingView,
-  Platform,
-  FlatList
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { toast } from 'sonner-native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RouteProp } from '@react-navigation/native';
-import { RootStackParamList, MaterialIconName, IonIconName, DateFormatOptions } from '../types';
+import { RootStackParamList } from '../types';
+import { colors } from '../theme/colors';
+import { commonStyles } from '../theme/styles';
 
 interface Chapter {
   id: string;
@@ -39,7 +38,7 @@ interface FontSizeOption {
 interface AlignmentOption {
   id: 'right' | 'center' | 'left' | 'justify';
   name: string;
-  icon: MaterialIconName;
+  icon: string; // Changed from MaterialIconName to string
 }
 
 // Sample books for dropdown
@@ -78,7 +77,7 @@ export default function NewEntryScreen() {
 
   // Get current date in Arabic format
   const getCurrentDate = () => {
-    const options: DateFormatOptions = {
+    const options: Intl.DateTimeFormatOptions = {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -147,541 +146,535 @@ export default function NewEntryScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}
-      >
-        {/* Header */}
-        <View style={styles.header}>
+      <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={24} color="#333" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>صفحة جديدة</Text>
+        <TouchableOpacity 
+          style={styles.saveButton}
+          onPress={savePage}
+        >
+          <Text style={styles.saveButtonText}>حفظ</Text>
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView style={styles.content}>
+        {/* Date display */}
+        <Text style={styles.dateText}>{getCurrentDate()}</Text>
+
+        {/* Book selection */}
+        <View style={styles.bookSelector}>
+          <Text style={styles.sectionLabel}>الكتاب:</Text>
           <TouchableOpacity 
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
+            style={styles.bookDropdown}
+            onPress={() => {
+              setShowBookDropdown(!showBookDropdown);
+              setShowChapterDropdown(false);
+            }}
           >
-            <Ionicons name="arrow-back" size={24} color="#333" />
+            <Text style={styles.bookDropdownText}>{selectedBook.title}</Text>
+            <Ionicons 
+              name={showBookDropdown ? "chevron-up" : "chevron-down"} 
+              size={20} 
+              color="#666" 
+            />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>صفحة جديدة</Text>
-          <TouchableOpacity 
-            style={styles.saveButton}
-            onPress={savePage}
-          >
-            <Text style={styles.saveButtonText}>حفظ</Text>
-          </TouchableOpacity>
+          
+          {showBookDropdown && (
+            <View style={styles.dropdownMenu}>
+              {books.map(book => (
+                <TouchableOpacity 
+                  key={book.id}
+                  style={styles.dropdownItem}
+                  onPress={() => {
+                    setSelectedBook(book);
+                    setSelectedChapter(book.chapters[0]);
+                    setShowBookDropdown(false);
+                  }}
+                >
+                  <Text style={styles.dropdownItemText}>{book.title}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
         </View>
 
-        <ScrollView style={styles.content}>
-          {/* Date display */}
-          <Text style={styles.dateText}>{getCurrentDate()}</Text>
-
-          {/* Book selection */}
-          <View style={styles.bookSelector}>
-            <Text style={styles.sectionLabel}>الكتاب:</Text>
-            <TouchableOpacity 
-              style={styles.bookDropdown}
-              onPress={() => {
-                setShowBookDropdown(!showBookDropdown);
-                setShowChapterDropdown(false);
-              }}
-            >
-              <Text style={styles.bookDropdownText}>{selectedBook.title}</Text>
-              <Ionicons 
-                name={showBookDropdown ? "chevron-up" : "chevron-down"} 
-                size={20} 
-                color="#666" 
-              />
-            </TouchableOpacity>
-            
-            {showBookDropdown && (
-              <View style={styles.dropdownMenu}>
-                {books.map(book => (
-                  <TouchableOpacity 
-                    key={book.id}
-                    style={styles.dropdownItem}
-                    onPress={() => {
-                      setSelectedBook(book);
-                      setSelectedChapter(book.chapters[0]);
-                      setShowBookDropdown(false);
-                    }}
-                  >
-                    <Text style={styles.dropdownItemText}>{book.title}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
-          </View>
-
-          {/* Chapter selection */}
-          <View style={styles.bookSelector}>
-            <Text style={styles.sectionLabel}>الفصل:</Text>
-            <TouchableOpacity 
-              style={styles.bookDropdown}
-              onPress={() => {
-                setShowChapterDropdown(!showChapterDropdown);
-                setShowBookDropdown(false);
-              }}
-            >
-              <Text style={styles.bookDropdownText}>{selectedChapter.title}</Text>
-              <Ionicons 
-                name={showChapterDropdown ? "chevron-up" : "chevron-down"} 
-                size={20} 
-                color="#666" 
-              />
-            </TouchableOpacity>
-            
-            {showChapterDropdown && (
-              <View style={styles.dropdownMenu}>
-                {selectedBook.chapters.map(chapter => (
-                  <TouchableOpacity 
-                    key={chapter.id}
-                    style={styles.dropdownItem}
-                    onPress={() => {
-                      setSelectedChapter(chapter);
-                      setShowChapterDropdown(false);
-                    }}
-                  >
-                    <Text style={styles.dropdownItemText}>{chapter.title}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
-          </View>
-
-          {/* Title input */}
-          <TextInput
-            style={styles.titleInput}
-            placeholder="عنوان الصفحة..."
-            placeholderTextColor="#999"
-            value={title}
-            onChangeText={setTitle}
-            textAlign="right"
-          />
-
-          {/* Formatting options */}
-          <View style={styles.formattingContainer}>
-            <TouchableOpacity 
-              style={styles.formattingButton}
-              onPress={() => setShowFormatting(!showFormatting)}
-            >
-              <MaterialCommunityIcons name="format-text" size={20} color="#3498db" />
-              <Text style={styles.formattingButtonText}>تنسيق النص</Text>
-              <Ionicons 
-                name={showFormatting ? "chevron-up" : "chevron-down"} 
-                size={16} 
-                color="#3498db" 
-              />
-            </TouchableOpacity>
-
-            {showFormatting && (
-              <View style={styles.formattingOptions}>
-                <View style={styles.formattingSection}>
-                  <Text style={styles.formattingLabel}>حجم الخط:</Text>
-                  <View style={styles.fontSizeOptions}>
-                    {fontSizeOptions.map(option => (
-                      <TouchableOpacity 
-                        key={option.id}
-                        style={[
-                          styles.fontSizeOption,
-                          fontSize === option.id && styles.selectedFontSizeOption
-                        ]}
-                        onPress={() => setFontSize(option.id)}
-                      >
-                        <Text style={[
-                          styles.fontSizeText,
-                          { fontSize: option.size },
-                          fontSize === option.id && styles.selectedOptionText
-                        ]}>
-                          أ
-                        </Text>
-                        <Text style={[
-                          styles.fontSizeName,
-                          fontSize === option.id && styles.selectedOptionText
-                        ]}>
-                          {option.name}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                </View>
-
-                <View style={styles.formattingSection}>
-                  <Text style={styles.formattingLabel}>محاذاة:</Text>
-                  <View style={styles.alignmentOptions}>
-                    {alignmentOptions.map(option => (
-                      <TouchableOpacity 
-                        key={option.id}
-                        style={[
-                          styles.alignmentOption,
-                          alignment === option.id && styles.selectedAlignmentOption
-                        ]}
-                        onPress={() => setAlignment(option.id)}
-                      >
-                        <MaterialCommunityIcons 
-                          name={option.icon} 
-                          size={20} 
-                          color={alignment === option.id ? '#fff' : '#333'} 
-                        />
-                        <Text style={[
-                          styles.alignmentName,
-                          alignment === option.id && { color: '#fff' }
-                        ]}>
-                          {option.name}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                </View>
-              </View>
-            )}
-          </View>
-
-          {/* Content input */}
-          <TextInput
-            style={[
-              styles.contentInput,
-              { 
-                fontSize: fontSizeOptions.find(option => option.id === fontSize)?.size,
-                textAlign: alignment === 'left' ? 'left' : alignment === 'center' ? 'center' : alignment === 'justify' ? 'justify' : 'right'
-              }
-            ]}
-            placeholder="اكتب محتوى الصفحة هنا..."
-            placeholderTextColor="#999"
-            multiline
-            value={content}
-            onChangeText={setContent}
-            textAlignVertical="top"
-          />
-
-          {/* Image section */}
-          <View style={styles.imageSection}>
-            <Text style={styles.sectionLabel}>الصورة:</Text>
-            <View style={styles.imageOptions}>
-              <TouchableOpacity 
-                style={styles.imageOption}
-                onPress={() => toast.info('ميزة التقاط صورة قيد التطوير')}
-              >
-                <Ionicons name="camera-outline" size={24} color="#3498db" />
-                <Text style={styles.imageOptionText}>التقاط صورة</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={styles.imageOption}
-                onPress={() => toast.info('ميزة اختيار صورة قيد التطوير')}
-              >
-                <Ionicons name="image-outline" size={24} color="#3498db" />
-                <Text style={styles.imageOptionText}>اختيار صورة</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={styles.imageOption}
-                onPress={generateImage}
-                disabled={isGeneratingImage}
-              >
-                <Ionicons name="sparkles-outline" size={24} color="#3498db" />
-                <Text style={styles.imageOptionText}>
-                  {isGeneratingImage ? 'جاري الإنشاء...' : 'إنشاء صورة'}
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            {imageUrl && (
-              <View style={styles.imagePreviewContainer}>
-                <Image 
-                  source={{ uri: imageUrl }} 
-                  style={styles.imagePreview} 
-                  resizeMode="cover"
-                />
+        {/* Chapter selection */}
+        <View style={styles.bookSelector}>
+          <Text style={styles.sectionLabel}>الفصل:</Text>
+          <TouchableOpacity 
+            style={styles.bookDropdown}
+            onPress={() => {
+              setShowChapterDropdown(!showChapterDropdown);
+              setShowBookDropdown(false);
+            }}
+          >
+            <Text style={styles.bookDropdownText}>{selectedChapter.title}</Text>
+            <Ionicons 
+              name={showChapterDropdown ? "chevron-up" : "chevron-down"} 
+              size={20} 
+              color="#666" 
+            />
+          </TouchableOpacity>
+          
+          {showChapterDropdown && (
+            <View style={styles.dropdownMenu}>
+              {selectedBook.chapters.map(chapter => (
                 <TouchableOpacity 
-                  style={styles.removeImageButton}
-                  onPress={() => setImageUrl(null)}
+                  key={chapter.id}
+                  style={styles.dropdownItem}
+                  onPress={() => {
+                    setSelectedChapter(chapter);
+                    setShowChapterDropdown(false);
+                  }}
                 >
-                  <Ionicons name="close-circle" size={24} color="#e74c3c" />
+                  <Text style={styles.dropdownItemText}>{chapter.title}</Text>
                 </TouchableOpacity>
+              ))}
+            </View>
+          )}
+        </View>
+
+        {/* Title input */}
+        <TextInput
+          style={styles.titleInput}
+          placeholder="عنوان الصفحة..."
+          placeholderTextColor="#999"
+          value={title}
+          onChangeText={setTitle}
+          textAlign="right"
+        />
+
+        {/* Formatting options */}
+        <View style={styles.formattingContainer}>
+          <TouchableOpacity 
+            style={styles.formattingButton}
+            onPress={() => setShowFormatting(!showFormatting)}
+          >
+            <Ionicons name="format-text" size={20} color="#3498db" />
+            <Text style={styles.formattingButtonText}>تنسيق النص</Text>
+            <Ionicons 
+              name={showFormatting ? "chevron-up" : "chevron-down"} 
+              size={16} 
+              color="#3498db" 
+            />
+          </TouchableOpacity>
+
+          {showFormatting && (
+            <View style={styles.formattingOptions}>
+              <View style={styles.formattingSection}>
+                <Text style={styles.formattingLabel}>حجم الخط:</Text>
+                <View style={styles.fontSizeOptions}>
+                  {fontSizeOptions.map(option => (
+                    <TouchableOpacity 
+                      key={option.id}
+                      style={[
+                        styles.fontSizeOption,
+                        fontSize === option.id && styles.selectedFontSizeOption
+                      ]}
+                      onPress={() => setFontSize(option.id)}
+                    >
+                      <Text style={[
+                        styles.fontSizeText,
+                        { fontSize: option.size },
+                        fontSize === option.id && styles.selectedOptionText
+                      ]}>
+                        أ
+                      </Text>
+                      <Text style={[
+                        styles.fontSizeName,
+                        fontSize === option.id && styles.selectedOptionText
+                      ]}>
+                        {option.name}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
               </View>
-            )}
+
+              <View style={styles.formattingSection}>
+                <Text style={styles.formattingLabel}>محاذاة:</Text>
+                <View style={styles.alignmentOptions}>
+                  {alignmentOptions.map(option => (
+                    <TouchableOpacity 
+                      key={option.id}
+                      style={[
+                        styles.alignmentOption,
+                        alignment === option.id && styles.selectedAlignmentOption
+                      ]}
+                      onPress={() => setAlignment(option.id)}
+                    >
+                      <Ionicons 
+                        name={option.icon} 
+                        size={20} 
+                        color={alignment === option.id ? '#fff' : '#333'} 
+                      />
+                      <Text style={[
+                        styles.alignmentName,
+                        alignment === option.id && { color: '#fff' }
+                      ]}>
+                        {option.name}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+            </View>
+          )}
+        </View>
+
+        {/* Content input */}
+        <TextInput
+          style={[
+            styles.contentInput,
+            { 
+              fontSize: fontSizeOptions.find(option => option.id === fontSize)?.size,
+              textAlign: alignment === 'left' ? 'left' : alignment === 'center' ? 'center' : alignment === 'justify' ? 'justify' : 'right'
+            }
+          ]}
+          placeholder="اكتب محتوى الصفحة هنا..."
+          placeholderTextColor="#999"
+          multiline
+          value={content}
+          onChangeText={setContent}
+          textAlignVertical="top"
+        />
+
+        {/* Image section */}
+        <View style={styles.imageSection}>
+          <Text style={styles.sectionLabel}>الصورة:</Text>
+          <View style={styles.imageOptions}>
+            <TouchableOpacity 
+              style={styles.imageOption}
+              onPress={() => toast.info('ميزة التقاط صورة قيد التطوير')}
+            >
+              <Ionicons name="camera-outline" size={24} color="#3498db" />
+              <Text style={styles.imageOptionText}>التقاط صورة</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.imageOption}
+              onPress={() => toast.info('ميزة اختيار صورة قيد التطوير')}
+            >
+              <Ionicons name="image-outline" size={24} color="#3498db" />
+              <Text style={styles.imageOptionText}>اختيار صورة</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.imageOption}
+              onPress={generateImage}
+              disabled={isGeneratingImage}
+            >
+              <Ionicons name="sparkles-outline" size={24} color="#3498db" />
+              <Text style={styles.imageOptionText}>
+                {isGeneratingImage ? 'جاري الإنشاء...' : 'إنشاء صورة'}
+              </Text>
+            </TouchableOpacity>
           </View>
 
-          {/* Page position */}
-          <View style={styles.pagePositionSection}>
-            <Text style={styles.sectionLabel}>موضع الصفحة:</Text>
-            <View style={styles.pagePositionOptions}>
-              <TouchableOpacity style={[styles.pagePositionOption, styles.selectedPagePositionOption]}>
-                <MaterialCommunityIcons name="page-last" size={24} color="#3498db" />
-                <Text style={styles.pagePositionText}>إضافة في نهاية الفصل</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.pagePositionOption}>
-                <MaterialCommunityIcons name="page-first" size={24} color="#666" />
-                <Text style={styles.pagePositionText}>إضافة في بداية الفصل</Text>
+          {imageUrl && (
+            <View style={styles.imagePreviewContainer}>
+              <Image 
+                source={{ uri: imageUrl }} 
+                style={styles.imagePreview} 
+                resizeMode="cover"
+              />
+              <TouchableOpacity 
+                style={styles.removeImageButton}
+                onPress={() => setImageUrl(null)}
+              >
+                <Ionicons name="close-circle" size={24} color="#e74c3c" />
               </TouchableOpacity>
             </View>
+          )}
+        </View>
+
+        {/* Page position */}
+        <View style={styles.pagePositionSection}>
+          <Text style={styles.sectionLabel}>موضع الصفحة:</Text>
+          <View style={styles.pagePositionOptions}>
+            <TouchableOpacity style={[styles.pagePositionOption, styles.selectedPagePositionOption]}>
+              <Ionicons name="page-last" size={24} color="#3498db" />
+              <Text style={styles.pagePositionText}>إضافة في نهاية الفصل</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.pagePositionOption}>
+              <Ionicons name="page-first" size={24} color="#666" />
+              <Text style={styles.pagePositionText}>إضافة في بداية الفصل</Text>
+            </TouchableOpacity>
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f9f9f9',
+  alignmentName: {
+    color: '#333',
+    fontSize: 12,
+    marginLeft: 5,
   },
-  header: {
+  alignmentOption: {
+    alignItems: 'center',
+    borderColor: '#ddd',
+    borderRadius: 5,
+    borderWidth: 1,
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginHorizontal: 5,
+    padding: 8,
+  },
+  alignmentOptions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingVertical: 15,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
   },
   backButton: {
     padding: 5,
   },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  saveButton: {
-    backgroundColor: '#3498db',
-    paddingVertical: 8,
-    paddingHorizontal: 15,
+  bookDropdown: {
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderColor: '#ddd',
     borderRadius: 5,
+    borderWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 12,
   },
-  saveButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+  bookDropdownText: {
+    color: '#333',
+    fontSize: 16,
+  },
+  bookSelector: {
+    marginBottom: 15,
+  },
+  container: {
+    backgroundColor: '#f9f9f9',
+    flex: 1,
   },
   content: {
     flex: 1,
     padding: 15,
   },
-  dateText: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 15,
-    textAlign: 'right',
-  },
-  bookSelector: {
-    marginBottom: 15,
-  },
-  sectionLabel: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 10,
-    textAlign: 'right',
-  },
-  bookDropdown: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  contentInput: {
     backgroundColor: '#fff',
-    borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 5,
+    borderWidth: 1,
+    color: '#333',
+    height: 200,
+    lineHeight: 24,
+    marginBottom: 15,
     padding: 12,
   },
-  bookDropdownText: {
+  dateText: {
+    color: '#666',
     fontSize: 16,
+    marginBottom: 15,
+    textAlign: 'right',
+  },
+  dropdownItem: {
+    borderBottomColor: '#eee',
+    borderBottomWidth: 1,
+    padding: 12,
+  },
+  dropdownItemText: {
     color: '#333',
+    fontSize: 16,
+    textAlign: 'right',
   },
   dropdownMenu: {
     backgroundColor: '#fff',
-    borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 5,
-    marginTop: 5,
+    borderWidth: 1,
     elevation: 3,
+    marginTop: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
     zIndex: 10,
   },
-  dropdownItem: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+  fontSizeName: {
+    color: '#666',
+    fontSize: 12,
   },
-  dropdownItemText: {
-    fontSize: 16,
-    color: '#333',
-    textAlign: 'right',
-  },
-  titleInput: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    padding: 12,
-    fontSize: 18,
-    color: '#333',
-    marginBottom: 15,
-  },
-  formattingContainer: {
-    marginBottom: 15,
-  },
-  formattingButton: {
-    flexDirection: 'row',
+  fontSizeOption: {
     alignItems: 'center',
-    backgroundColor: '#f0f8ff',
-    borderWidth: 1,
-    borderColor: '#bde0ff',
-    borderRadius: 5,
-    padding: 10,
-  },
-  formattingButtonText: {
-    color: '#3498db',
-    marginLeft: 5,
-    marginRight: 5,
-    flex: 1,
-    textAlign: 'right',
-  },
-  formattingOptions: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 5,
-    padding: 10,
-    marginTop: 10,
-  },
-  formattingSection: {
-    marginBottom: 15,
-  },
-  formattingLabel: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 10,
-    textAlign: 'right',
+    borderWidth: 1,
+    flex: 1,
+    marginHorizontal: 5,
+    padding: 8,
   },
   fontSizeOptions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  fontSizeOption: {
-    flex: 1,
-    alignItems: 'center',
-    padding: 8,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    marginHorizontal: 5,
-  },
-  selectedFontSizeOption: {
-    backgroundColor: '#3498db',
-    borderColor: '#3498db',
-  },
   fontSizeText: {
     color: '#333',
     marginBottom: 5,
   },
-  fontSizeName: {
-    fontSize: 12,
-    color: '#666',
+  formattingButton: {
+    alignItems: 'center',
+    backgroundColor: '#f0f8ff',
+    borderColor: '#bde0ff',
+    borderRadius: 5,
+    borderWidth: 1,
+    flexDirection: 'row',
+    padding: 10,
   },
-  selectedOptionText: {
-    color: '#fff',
+  formattingButtonText: {
+    color: '#3498db',
+    flex: 1,
+    marginLeft: 5,
+    marginRight: 5,
+    textAlign: 'right',
   },
-  alignmentOptions: {
+  formattingContainer: {
+    marginBottom: 15,
+  },
+  formattingLabel: {
+    color: '#333',
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'right',
+  },
+  formattingOptions: {
+    backgroundColor: '#fff',
+    borderColor: '#ddd',
+    borderRadius: 5,
+    borderWidth: 1,
+    marginTop: 10,
+    padding: 10,
+  },
+  formattingSection: {
+    marginBottom: 15,
+  },
+  header: {
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderBottomColor: '#eee',
+    borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    paddingHorizontal: 15,
+    paddingVertical: 15,
   },
-  alignmentOption: {
-    flex: 1,
-    flexDirection: 'row',
+  headerTitle: {
+    color: '#333',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  imageOption: {
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: 8,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    marginHorizontal: 5,
-  },
-  selectedAlignmentOption: {
-    backgroundColor: '#3498db',
-    borderColor: '#3498db',
-  },
-  alignmentName: {
-    fontSize: 12,
-    color: '#333',
-    marginLeft: 5,
-  },
-  contentInput: {
     backgroundColor: '#fff',
-    borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 5,
-    padding: 12,
-    color: '#333',
-    height: 200,
-    marginBottom: 15,
-    lineHeight: 24,
+    borderWidth: 1,
+    padding: 10,
+    width: '30%',
   },
-  imageSection: {
-    marginBottom: 20,
+  imageOptionText: {
+    color: '#666',
+    fontSize: 12,
+    marginTop: 5,
+    textAlign: 'center',
   },
   imageOptions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 15,
   },
-  imageOption: {
-    width: '30%',
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
+  imagePreview: {
     borderRadius: 5,
-    padding: 10,
-    alignItems: 'center',
-  },
-  imageOptionText: {
-    marginTop: 5,
-    fontSize: 12,
-    color: '#666',
-    textAlign: 'center',
+    height: 200,
+    width: '100%',
   },
   imagePreviewContainer: {
-    position: 'relative',
     alignItems: 'center',
     marginBottom: 15,
+    position: 'relative',
   },
-  imagePreview: {
-    width: '100%',
-    height: 200,
-    borderRadius: 5,
-  },
-  removeImageButton: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    backgroundColor: '#fff',
-    borderRadius: 15,
-  },
-  pagePositionSection: {
+  imageSection: {
     marginBottom: 20,
+  },
+  pagePositionOption: {
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderColor: '#ddd',
+    borderRadius: 5,
+    borderWidth: 1,
+    flexDirection: 'row',
+    marginBottom: 10,
+    padding: 12,
   },
   pagePositionOptions: {
     flexDirection: 'column',
   },
-  pagePositionOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    padding: 12,
-    marginBottom: 10,
-  },
-  selectedPagePositionOption: {
-    borderColor: '#3498db',
-    backgroundColor: '#f0f8ff',
+  pagePositionSection: {
+    marginBottom: 20,
   },
   pagePositionText: {
-    fontSize: 14,
     color: '#666',
+    fontSize: 14,
     marginLeft: 10,
+  },
+  removeImageButton: {
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    position: 'absolute',
+    right: 10,
+    top: 10,
+  },
+  saveButton: {
+    backgroundColor: '#3498db',
+    borderRadius: 5,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+  },
+  saveButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  sectionLabel: {
+    color: '#333',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'right',
+  },
+  selectedAlignmentOption: {
+    backgroundColor: '#3498db',
+    borderColor: '#3498db',
+  },
+  selectedFontSizeOption: {
+    backgroundColor: '#3498db',
+    borderColor: '#3498db',
+  },
+  selectedOptionText: {
+    color: '#fff',
+  },
+  selectedPagePositionOption: {
+    backgroundColor: '#f0f8ff',
+    borderColor: '#3498db',
+  },
+  titleInput: {
+    backgroundColor: '#fff',
+    borderColor: '#ddd',
+    borderRadius: 5,
+    borderWidth: 1,
+    color: '#333',
+    fontSize: 18,
+    marginBottom: 15,
+    padding: 12,
   },
 });
