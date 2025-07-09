@@ -13,8 +13,61 @@ import SettingsScreen from "./screens/SettingsScreen"
 import ChapterManagementScreen from "./screens/ChapterManagementScreen"
 import BookExportScreen from "./screens/BookExportScreen"
 
-// إنشاء سياق عام للتطبيق لمشاركة الإعدادات
-export const AppContext = createContext(null);
+// Define the type for our context
+interface AppContextType {
+  darkMode: boolean;
+  setDarkMode: React.Dispatch<React.SetStateAction<boolean>>;
+  language: string;
+  setLanguage: React.Dispatch<React.SetStateAction<string>>;
+  notifications: boolean;
+  setNotifications: React.Dispatch<React.SetStateAction<boolean>>;
+  cloudSync: boolean;
+  setCloudSync: React.Dispatch<React.SetStateAction<boolean>>;
+  appLock: boolean;
+  setAppLock: React.Dispatch<React.SetStateAction<boolean>>;
+  telegramEnabled: boolean;
+  setTelegramEnabled: React.Dispatch<React.SetStateAction<boolean>>;
+  telegramBot: string;
+  setTelegramBot: React.Dispatch<React.SetStateAction<string>>;
+  telegramChannel: string;
+  setTelegramChannel: React.Dispatch<React.SetStateAction<string>>;
+  autoBackup: boolean;
+  setAutoBackup: React.Dispatch<React.SetStateAction<boolean>>;
+  backupFrequency: string;
+  setBackupFrequency: React.Dispatch<React.SetStateAction<string>>;
+  fontFamily: string;
+  setFontFamily: React.Dispatch<React.SetStateAction<string>>;
+  fontSize: string;
+  setFontSize: React.Dispatch<React.SetStateAction<string>>;
+}
+
+// Create the context with a default value matching our type
+export const AppContext = createContext<AppContextType>({
+  darkMode: false,
+  setDarkMode: () => {},
+  language: 'ar',
+  setLanguage: () => {},
+  notifications: true,
+  setNotifications: () => {},
+  cloudSync: true,
+  setCloudSync: () => {},
+  appLock: false,
+  setAppLock: () => {},
+  telegramEnabled: false,
+  setTelegramEnabled: () => {},
+  telegramBot: '@moalif_bot',
+  setTelegramBot: () => {},
+  telegramChannel: '@moalif_backup',
+  setTelegramChannel: () => {},
+  autoBackup: false,
+  setAutoBackup: () => {},
+  backupFrequency: 'daily',
+  setBackupFrequency: () => {},
+  fontFamily: 'Amiri',
+  setFontFamily: () => {},
+  fontSize: 'medium',
+  setFontSize: () => {},
+});
   
 const Stack = createNativeStackNavigator();
   

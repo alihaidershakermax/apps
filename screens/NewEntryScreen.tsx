@@ -15,9 +15,35 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { toast } from 'sonner-native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RouteProp } from '@react-navigation/native';
+import { RootStackParamList, MaterialIconName, IonIconName, DateFormatOptions } from '../types';
+
+interface Chapter {
+  id: string;
+  title: string;
+}
+
+interface Book {
+  id: string;
+  title: string;
+  chapters: Chapter[];
+}
+
+interface FontSizeOption {
+  id: 'small' | 'medium' | 'large' | 'xlarge';
+  name: string;
+  size: number;
+}
+
+interface AlignmentOption {
+  id: 'right' | 'center' | 'left' | 'justify';
+  name: string;
+  icon: MaterialIconName;
+}
 
 // Sample books for dropdown
-const books = [
+const books: Book[] = [
   { id: '1', title: 'رحلة الحياة', chapters: [
     { id: 'ch1', title: 'الفصل الأول: البداية' },
     { id: 'ch2', title: 'الفصل الثاني: المواجهة' },
@@ -30,26 +56,34 @@ const books = [
   ]},
 ];
 
+type NewEntryScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'NewEntry'>;
+type NewEntryScreenRouteProp = RouteProp<RootStackParamList, 'NewEntry'>;
+
 export default function NewEntryScreen() {
-  const navigation = useNavigation();
-  const route = useRoute();
-  const { bookId: routeBookId } = route.params || { bookId: '1' };
+  const navigation = useNavigation<NewEntryScreenNavigationProp>();
+  const route = useRoute<NewEntryScreenRouteProp>();
+  const { bookId } = route.params;
   
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [selectedBook, setSelectedBook] = useState(books.find(book => book.id === routeBookId) || books[0]);
-  const [selectedChapter, setSelectedChapter] = useState(selectedBook.chapters[0]);
+  const [selectedBook, setSelectedBook] = useState<Book>(books.find(book => book.id === bookId) || books[0]);
+  const [selectedChapter, setSelectedChapter] = useState<Chapter>(selectedBook.chapters[0]);
   const [showBookDropdown, setShowBookDropdown] = useState(false);
   const [showChapterDropdown, setShowChapterDropdown] = useState(false);
-  const [imageUrl, setImageUrl] = useState(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
-  const [fontSize, setFontSize] = useState('medium');
-  const [alignment, setAlignment] = useState('right');
+  const [fontSize, setFontSize] = useState<FontSizeOption['id']>('medium');
+  const [alignment, setAlignment] = useState<AlignmentOption['id']>('right');
   const [showFormatting, setShowFormatting] = useState(false);
 
   // Get current date in Arabic format
   const getCurrentDate = () => {
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const options: DateFormatOptions = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    };
     return new Date().toLocaleDateString('ar-EG', options);
   };
 
@@ -67,8 +101,8 @@ export default function NewEntryScreen() {
       const prompt = `${title || 'صفحة من كتاب'}: ${content.substring(0, 100)}`;
       
       // Call the image generation API
-      const imageUrl = `https://api.a0.dev/assets/image?text=${encodeURIComponent(prompt)}&aspect=16:9`;
-      setImageUrl(imageUrl);
+      const newImageUrl = `https://api.a0.dev/assets/image?text=${encodeURIComponent(prompt)}&aspect=16:9`;
+      setImageUrl(newImageUrl);
       toast.success('تم إنشاء الصورة بنجاح');
     } catch (error) {
       toast.error('حدث خطأ أثناء إنشاء الصورة');
@@ -96,7 +130,7 @@ export default function NewEntryScreen() {
   };
 
   // Font size options
-  const fontSizeOptions = [
+  const fontSizeOptions: FontSizeOption[] = [
     { id: 'small', name: 'صغير', size: 14 },
     { id: 'medium', name: 'متوسط', size: 16 },
     { id: 'large', name: 'كبير', size: 18 },
@@ -104,7 +138,7 @@ export default function NewEntryScreen() {
   ];
 
   // Alignment options
-  const alignmentOptions = [
+  const alignmentOptions: AlignmentOption[] = [
     { id: 'right', name: 'يمين', icon: 'format-align-right' },
     { id: 'center', name: 'وسط', icon: 'format-align-center' },
     { id: 'left', name: 'يسار', icon: 'format-align-left' },
@@ -304,7 +338,7 @@ export default function NewEntryScreen() {
             style={[
               styles.contentInput,
               { 
-                fontSize: fontSizeOptions.find(option => option.id === fontSize).size,
+                fontSize: fontSizeOptions.find(option => option.id === fontSize)?.size,
                 textAlign: alignment === 'left' ? 'left' : alignment === 'center' ? 'center' : alignment === 'justify' ? 'justify' : 'right'
               }
             ]}

@@ -2,14 +2,42 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, FlatList, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { toast } from 'sonner-native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList, MaterialIconName, IonIconName } from '../types';
 
 // Get screen dimensions
 const { width } = Dimensions.get('window');
 
+// Types for our data
+interface BookItem {
+  id: string;
+  title: string;
+  author: string;
+  coverColor: string;
+  coverImage: string;
+  pages: number;
+  chapters: number;
+  lastUpdated: string;
+  style: keyof typeof bookStyleIcons;
+}
+
+interface PageItem {
+  id: string;
+  title: string;
+  date: string;
+  bookId: string;
+  preview: string;
+}
+
+interface BookStyleIcon {
+  name: MaterialIconName;
+  color: string;
+}
+
 // Sample data for books
-const sampleBooks = [
+const sampleBooks: BookItem[] = [
   { 
     id: '1', 
     title: 'رحلة الحياة', 
@@ -46,7 +74,7 @@ const sampleBooks = [
 ];
 
 // Sample data for recent pages
-const recentPages = [
+const recentPages: PageItem[] = [
   { id: '1', title: 'الفصل الأول: البداية', date: '2025-06-25', bookId: '1', preview: 'كانت البداية صعبة، لكنها كانت ضرورية لفهم ما سيأتي لاحقاً...' },
   { id: '2', title: 'مقدمة الكتاب', date: '2025-06-24', bookId: '2', preview: 'في هذا الكتاب سأروي قصة طفولتي كما عشتها بكل تفاصيلها...' },
   { id: '3', title: 'يوم الحصار', date: '2025-06-23', bookId: '3', preview: 'لم نكن نعلم أن ذلك اليوم سيكون بداية لفترة طويلة من الحصار...' },
@@ -54,7 +82,7 @@ const recentPages = [
 ];
 
 // Book style icons mapping
-const bookStyleIcons = {
+const bookStyleIcons: Record<string, BookStyleIcon> = {
   classic: { name: 'book', color: '#8e44ad' },
   vintage: { name: 'book-open-page-variant', color: '#d35400' },
   military: { name: 'shield', color: '#27ae60' },
@@ -63,15 +91,21 @@ const bookStyleIcons = {
   artistic: { name: 'palette', color: '#f39c12' },
 };
 
+type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
+
 export default function HomeScreen() {
-  const navigation = useNavigation();
-  const [activeTab, setActiveTab] = useState('books');
+  const navigation = useNavigation<HomeScreenNavigationProp>();
+  const [activeTab, setActiveTab] = useState<'books' | 'pages' | 'stats'>('books');
+  const [selectedBook, setSelectedBook] = useState<BookItem | null>(null);
 
   // Function to render book item
-  const renderBookItem = ({ item }) => (
+  const renderBookItem = ({ item }: { item: BookItem }) => (
     <TouchableOpacity 
       style={styles.bookItem}
-      onPress={() => navigation.navigate('BookView', { bookId: item.id })}
+      onPress={() => {
+        setSelectedBook(item);
+        setActiveTab('pages');
+      }}
     >
       <View style={styles.bookCoverContainer}>
         <Image 
@@ -95,7 +129,7 @@ export default function HomeScreen() {
   );
 
   // Function to render page item
-  const renderPageItem = ({ item }) => (
+  const renderPageItem = ({ item }: { item: PageItem }) => (
     <TouchableOpacity 
       style={styles.pageItem}
       onPress={() => navigation.navigate('EntryDetail', { entryId: item.id })}
@@ -115,8 +149,12 @@ export default function HomeScreen() {
   );
 
   // Function to format date
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    };
     return new Date(dateString).toLocaleDateString('ar-EG', options);
   };
 
@@ -159,6 +197,15 @@ export default function HomeScreen() {
       </View>
     </View>
   );
+
+  // Fix the navigation.navigate call
+  const handleAddEntry = () => {
+    if (selectedBook) {
+      navigation.navigate('NewEntry', { bookId: selectedBook.id });
+    } else {
+      toast.error('الرجاء اختيار دفتر أولاً');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -226,13 +273,7 @@ export default function HomeScreen() {
       {/* Floating Action Button */}
       <TouchableOpacity 
         style={styles.fab}
-        onPress={() => {
-          if (activeTab === 'books') {
-            navigation.navigate('NewBook');
-          } else {
-            navigation.navigate('NewEntry');
-          }
-        }}
+        onPress={handleAddEntry}
       >
         <Ionicons name="add" size={24} color="#fff" />
       </TouchableOpacity>

@@ -1,82 +1,26 @@
 import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  ScrollView, 
-  TextInput,
-  FlatList,
-  Alert
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RouteProp } from '@react-navigation/native';
+import { RootStackParamList, Book, Chapter } from '../types';
+import { bookData } from '../data/books';
 import { toast } from 'sonner-native';
 
-// Sample book data
-const bookData = {
-  '1': {
-    id: '1',
-    title: 'رحلة الحياة',
-    chapters: [
-      {
-        id: 'ch1',
-        title: 'الفصل الأول: البداية',
-        pages: [
-          { id: 'p1', title: 'البداية' },
-          { id: 'p2', title: 'التحول' },
-        ]
-      },
-      {
-        id: 'ch2',
-        title: 'الفصل الثاني: المواجهة',
-        pages: [
-          { id: 'p3', title: 'التحدي الأول' },
-        ]
-      }
-    ]
-  },
-  '2': {
-    id: '2',
-    title: 'ذكريات الطفولة',
-    chapters: [
-      {
-        id: 'ch1',
-        title: 'الفصل الأول: سنوات الطفولة المبكرة',
-        pages: [
-          { id: 'p1', title: 'ذكرى من الطفولة' },
-        ]
-      }
-    ]
-  },
-  '3': {
-    id: '3',
-    title: 'أيام الحرب',
-    chapters: [
-      {
-        id: 'ch1',
-        title: 'الفصل الأول: بداية الحصار',
-        pages: [
-          { id: 'p1', title: 'يوم الحصار' },
-        ]
-      }
-    ]
-  }
-};
+type ChapterManagementScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'ChapterManagement'>;
+type ChapterManagementScreenRouteProp = RouteProp<RootStackParamList, 'ChapterManagement'>;
 
 export default function ChapterManagementScreen() {
-  const navigation = useNavigation();
-  const route = useRoute();
-  const { bookId } = route.params || { bookId: '1' };
+  const navigation = useNavigation<ChapterManagementScreenNavigationProp>();
+  const route = useRoute<ChapterManagementScreenRouteProp>();
+  const { bookId } = route.params;
   
-  const book = bookData[bookId];
-  const [chapters, setChapters] = useState(book.chapters);
-  const [newChapterTitle, setNewChapterTitle] = useState('');
-  const [editingChapterId, setEditingChapterId] = useState(null);
-  const [editingChapterTitle, setEditingChapterTitle] = useState('');
-  const [isDragging, setIsDragging] = useState(false);
-  const [draggedChapterId, setDraggedChapterId] = useState(null);
+  const book = bookData[bookId] as Book;
+  const [chapters, setChapters] = useState<Chapter[]>(book.chapters);
+  const [editingChapter, setEditingChapter] = useState<string | null>(null);
+  const [newChapterTitle, setNewChapterTitle] = useState<string>('');
 
   // Function to add a new chapter
   const addChapter = () => {
@@ -85,9 +29,9 @@ export default function ChapterManagementScreen() {
       return;
     }
 
-    const newChapter = {
+    const newChapter: Chapter = {
       id: `ch${chapters.length + 1}`,
-      title: newChapterTitle,
+      title: newChapterTitle.trim(),
       pages: []
     };
 
@@ -96,103 +40,74 @@ export default function ChapterManagementScreen() {
     toast.success('تم إضافة الفصل بنجاح');
   };
 
-  // Function to start editing a chapter
-  const startEditingChapter = (chapter) => {
-    setEditingChapterId(chapter.id);
-    setEditingChapterTitle(chapter.title);
-  };
-
-  // Function to save edited chapter
-  const saveEditedChapter = () => {
-    if (!editingChapterTitle.trim()) {
+  // Function to update chapter title
+  const updateChapterTitle = (chapterId: string, newTitle: string) => {
+    if (!newTitle.trim()) {
       toast.error('يرجى إدخال عنوان للفصل');
       return;
     }
 
-    const updatedChapters = chapters.map(chapter => 
-      chapter.id === editingChapterId 
-        ? { ...chapter, title: editingChapterTitle } 
+    setChapters(chapters.map(chapter => 
+      chapter.id === chapterId 
+        ? { ...chapter, title: newTitle.trim() }
         : chapter
-    );
-
-    setChapters(updatedChapters);
-    setEditingChapterId(null);
-    setEditingChapterTitle('');
-    toast.success('تم تعديل الفصل بنجاح');
+    ));
+    setEditingChapter(null);
+    toast.success('تم تحديث عنوان الفصل');
   };
 
-  // Function to delete a chapter
-  const deleteChapter = (chapterId) => {
-    Alert.alert(
-      'حذف الفصل',
-      'هل أنت متأكد من حذف هذا الفصل؟ سيتم حذف جميع الصفحات المرتبطة به.',
-      [
-        {
-          text: 'إلغاء',
-          style: 'cancel',
-        },
-        {
-          text: 'حذف',
-          style: 'destructive',
-          onPress: () => {
-            const updatedChapters = chapters.filter(chapter => chapter.id !== chapterId);
-            setChapters(updatedChapters);
-            toast.success('تم حذف الفصل بنجاح');
-          },
-        },
-      ]
-    );
+  // Function to delete chapter
+  const deleteChapter = (chapterId: string) => {
+    setChapters(chapters.filter(chapter => chapter.id !== chapterId));
+    toast.success('تم حذف الفصل');
   };
 
   // Function to move chapter up
-  const moveChapterUp = (index) => {
-    if (index === 0) return;
-    
-    const updatedChapters = [...chapters];
-    const temp = updatedChapters[index];
-    updatedChapters[index] = updatedChapters[index - 1];
-    updatedChapters[index - 1] = temp;
-    
-    setChapters(updatedChapters);
+  const moveChapterUp = (index: number) => {
+    if (index > 0) {
+      const newChapters = [...chapters];
+      [newChapters[index], newChapters[index - 1]] = [newChapters[index - 1], newChapters[index]];
+      setChapters(newChapters);
+    }
   };
 
   // Function to move chapter down
-  const moveChapterDown = (index) => {
-    if (index === chapters.length - 1) return;
-    
-    const updatedChapters = [...chapters];
-    const temp = updatedChapters[index];
-    updatedChapters[index] = updatedChapters[index + 1];
-    updatedChapters[index + 1] = temp;
-    
-    setChapters(updatedChapters);
+  const moveChapterDown = (index: number) => {
+    if (index < chapters.length - 1) {
+      const newChapters = [...chapters];
+      [newChapters[index], newChapters[index + 1]] = [newChapters[index + 1], newChapters[index]];
+      setChapters(newChapters);
+    }
   };
 
-  // Function to render chapter item
-  const renderChapterItem = ({ item, index }) => (
-    <View style={styles.chapterItem}>
-      {editingChapterId === item.id ? (
-        <View style={styles.editChapterContainer}>
+  // Render chapter item
+  const renderChapterItem = ({ item, index }: { item: Chapter; index: number }) => (
+    <View key={item.id} style={styles.chapterItem}>
+      {editingChapter === item.id ? (
+        <View style={styles.editContainer}>
           <TextInput
-            style={styles.editChapterInput}
-            value={editingChapterTitle}
-            onChangeText={setEditingChapterTitle}
-            placeholder="عنوان الفصل"
+            style={styles.editInput}
+            value={item.title}
+            onChangeText={(text) => {
+              setChapters(chapters.map(ch => 
+                ch.id === item.id ? { ...ch, title: text } : ch
+              ));
+            }}
+            placeholder="عنوان الفصل..."
             placeholderTextColor="#999"
-            textAlign="right"
           />
-          <View style={styles.editChapterButtons}>
-            <TouchableOpacity 
-              style={styles.saveButton}
-              onPress={saveEditedChapter}
+          <View style={styles.editActions}>
+            <TouchableOpacity
+              style={[styles.editButton, styles.saveButton]}
+              onPress={() => updateChapterTitle(item.id, item.title)}
             >
-              <Text style={styles.saveButtonText}>حفظ</Text>
+              <Ionicons name="checkmark" size={20} color="#fff" />
             </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.cancelButton}
-              onPress={() => setEditingChapterId(null)}
+            <TouchableOpacity
+              style={[styles.editButton, styles.cancelButton]}
+              onPress={() => setEditingChapter(null)}
             >
-              <Text style={styles.cancelButtonText}>إلغاء</Text>
+              <Ionicons name="close" size={20} color="#fff" />
             </TouchableOpacity>
           </View>
         </View>
@@ -200,34 +115,34 @@ export default function ChapterManagementScreen() {
         <View style={styles.chapterContent}>
           <View style={styles.chapterInfo}>
             <Text style={styles.chapterTitle}>{item.title}</Text>
-            <Text style={styles.chapterPages}>{item.pages.length} صفحة</Text>
+            <Text style={styles.pageCount}>{item.pages.length} صفحة</Text>
           </View>
           <View style={styles.chapterActions}>
-            <TouchableOpacity 
-              style={styles.chapterActionButton}
-              onPress={() => startEditingChapter(item)}
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => setEditingChapter(item.id)}
             >
-              <Ionicons name="pencil" size={18} color="#3498db" />
+              <Ionicons name="pencil" size={20} color="#3498db" />
             </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.chapterActionButton}
+            <TouchableOpacity
+              style={styles.actionButton}
               onPress={() => deleteChapter(item.id)}
             >
-              <Ionicons name="trash" size={18} color="#e74c3c" />
+              <Ionicons name="trash" size={20} color="#e74c3c" />
             </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.chapterActionButton, index === 0 && styles.disabledButton]}
+            <TouchableOpacity
+              style={[styles.actionButton, index === 0 && styles.disabledButton]}
               onPress={() => moveChapterUp(index)}
               disabled={index === 0}
             >
-              <Ionicons name="arrow-up" size={18} color={index === 0 ? "#ccc" : "#333"} />
+              <Ionicons name="arrow-up" size={20} color={index === 0 ? "#ccc" : "#666"} />
             </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.chapterActionButton, index === chapters.length - 1 && styles.disabledButton]}
+            <TouchableOpacity
+              style={[styles.actionButton, index === chapters.length - 1 && styles.disabledButton]}
               onPress={() => moveChapterDown(index)}
               disabled={index === chapters.length - 1}
             >
-              <Ionicons name="arrow-down" size={18} color={index === chapters.length - 1 ? "#ccc" : "#333"} />
+              <Ionicons name="arrow-down" size={20} color={index === chapters.length - 1 ? "#ccc" : "#666"} />
             </TouchableOpacity>
           </View>
         </View>
@@ -249,57 +164,27 @@ export default function ChapterManagementScreen() {
         <View style={{ width: 40 }} />
       </View>
 
-      <View style={styles.bookInfo}>
-        <Text style={styles.bookTitle}>{book.title}</Text>
-        <Text style={styles.bookChapters}>{chapters.length} فصل</Text>
-      </View>
-
       {/* Add new chapter */}
       <View style={styles.addChapterContainer}>
         <TextInput
-          style={styles.chapterInput}
+          style={styles.input}
           value={newChapterTitle}
           onChangeText={setNewChapterTitle}
-          placeholder="عنوان الفصل الجديد"
+          placeholder="عنوان الفصل الجديد..."
           placeholderTextColor="#999"
-          textAlign="right"
         />
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.addButton}
           onPress={addChapter}
         >
-          <Text style={styles.addButtonText}>إضافة فصل</Text>
+          <Ionicons name="add" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
 
       {/* Chapters list */}
-      <FlatList
-        data={chapters}
-        renderItem={renderChapterItem}
-        keyExtractor={item => item.id}
-        contentContainerStyle={styles.chaptersList}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <MaterialCommunityIcons name="book-open-page-variant" size={60} color="#ccc" />
-            <Text style={styles.emptyText}>لا توجد فصول</Text>
-            <Text style={styles.emptySubText}>أضف فصولاً جديدة لتنظيم كتابك</Text>
-          </View>
-        }
-      />
-
-      {/* Save button */}
-      <View style={styles.saveContainer}>
-        <TouchableOpacity 
-          style={styles.saveAllButton}
-          onPress={() => {
-          // Here you would save the chapters to your storage
-          toast.success('تم حفظ التغييرات بنجاح');
-          navigation.goBack();
-        }}
-        >
-          <Text style={styles.saveAllButtonText}>حفظ التغييرات</Text>
-        </TouchableOpacity>
-      </View>
+      <ScrollView style={styles.chaptersList}>
+        {chapters.map((chapter, index) => renderChapterItem({ item: chapter, index }))}
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -307,15 +192,13 @@ export default function ChapterManagementScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#fff',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingVertical: 15,
-    backgroundColor: '#fff',
+    padding: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
   },
@@ -327,167 +210,92 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
   },
-  bookInfo: {
-    backgroundColor: '#fff',
-    padding: 15,
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  bookTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 5,
-  },
-  bookChapters: {
-    fontSize: 14,
-    color: '#666',
-  },
   addChapterContainer: {
     flexDirection: 'row',
     padding: 15,
-    backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
   },
-  chapterInput: {
+  input: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    padding: 10,
-    fontSize: 16,
-    color: '#333',
+    height: 40,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+    paddingHorizontal: 15,
     marginRight: 10,
+    textAlign: 'right',
   },
   addButton: {
+    width: 40,
+    height: 40,
     backgroundColor: '#3498db',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 5,
+    borderRadius: 8,
     justifyContent: 'center',
-  },
-  addButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
+    alignItems: 'center',
   },
   chaptersList: {
-    padding: 15,
+    flex: 1,
   },
   chapterItem: {
-    backgroundColor: '#fff',
-    borderRadius: 5,
-    marginBottom: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
   },
   chapterContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 15,
+    alignItems: 'center',
   },
   chapterInfo: {
     flex: 1,
   },
   chapterTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
     color: '#333',
-    textAlign: 'right',
     marginBottom: 5,
   },
-  chapterPages: {
+  pageCount: {
     fontSize: 14,
     color: '#666',
-    textAlign: 'right',
   },
   chapterActions: {
     flexDirection: 'row',
   },
-  chapterActionButton: {
+  actionButton: {
     padding: 5,
-    marginLeft: 5,
+    marginLeft: 10,
   },
   disabledButton: {
     opacity: 0.5,
   },
-  editChapterContainer: {
-    padding: 15,
-  },
-  editChapterInput: {
-    backgroundColor: '#f5f5f5',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    padding: 10,
-    fontSize: 16,
-    color: '#333',
-    marginBottom: 10,
-  },
-  editChapterButtons: {
+  editContainer: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  editInput: {
+    flex: 1,
+    height: 40,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    marginRight: 10,
+    textAlign: 'right',
+  },
+  editActions: {
+    flexDirection: 'row',
+  },
+  editButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 5,
   },
   saveButton: {
-    backgroundColor: '#3498db',
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    borderRadius: 5,
-    marginLeft: 10,
-  },
-  saveButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    backgroundColor: '#2ecc71',
   },
   cancelButton: {
-    backgroundColor: '#f5f5f5',
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  cancelButtonText: {
-    color: '#333',
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 30,
-  },
-  emptyText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#666',
-    marginTop: 10,
-  },
-  emptySubText: {
-    fontSize: 14,
-    color: '#999',
-    marginTop: 5,
-    textAlign: 'center',
-  },
-  saveContainer: {
-    padding: 15,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-  },
-  saveAllButton: {
-    backgroundColor: '#27ae60',
-    paddingVertical: 12,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  saveAllButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
+    backgroundColor: '#e74c3c',
   },
 });

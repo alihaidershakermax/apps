@@ -18,13 +18,43 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { Ionicons, MaterialCommunityIcons, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { toast } from 'sonner-native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList, IonIconName } from '../types';
 
 const { width } = Dimensions.get('window');
 
+interface Tab {
+  id: TabId;
+  title: string;
+  icon: IonIconName;
+}
+
+type TabId = 'general' | 'appearance' | 'security' | 'telegram' | 'about';
+type Language = 'ar' | 'en';
+type BackupFrequency = 'daily' | 'weekly' | 'monthly';
+type FontSize = 'small' | 'medium' | 'large' | 'xlarge';
+type ThemeId = 'classic' | 'modern' | 'dark' | 'light' | 'vintage' | 'elegant' | 'nature' | 'romantic';
+
+interface Font {
+  id: string;
+  name: string;
+}
+
+interface FontSizeOption {
+  id: FontSize;
+  name: string;
+}
+
+interface Theme {
+  id: ThemeId;
+  name: string;
+  color: string;
+}
+
 // Tabs for settings
-const TABS = [
+const TABS: Tab[] = [
   { id: 'general', title: 'عام', icon: 'settings-outline' },
   { id: 'appearance', title: 'المظهر', icon: 'color-palette-outline' },
   { id: 'security', title: 'الأمان', icon: 'shield-outline' },
@@ -32,12 +62,29 @@ const TABS = [
   { id: 'about', title: 'حول', icon: 'information-circle-outline' },
 ];
 
+type SettingsScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Settings'>;
+
+// Social media icons
+const SOCIAL_ICONS: Record<string, IonIconName> = {
+  telegram: 'send-outline',
+  twitter: 'logo-twitter',
+  instagram: 'logo-instagram',
+};
+
+// Action button icons
+const ACTION_ICONS: Record<string, IonIconName> = {
+  pin: 'keypad-outline',
+  backup: 'cloud-upload-outline',
+  connect: 'link-outline',
+  telegram: 'send-outline'
+};
+
 export default function SettingsScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<SettingsScreenNavigationProp>();
   
   // Local state for settings
   const [darkMode, setDarkMode] = useState(false);
-  const [language, setLanguage] = useState('ar');
+  const [language, setLanguage] = useState<Language>('ar');
   const [notifications, setNotifications] = useState(true);
   const [cloudSync, setCloudSync] = useState(true);
   const [appLock, setAppLock] = useState(false);
@@ -45,17 +92,17 @@ export default function SettingsScreen() {
   const [telegramBot, setTelegramBot] = useState('@moalif_bot');
   const [telegramChannel, setTelegramChannel] = useState('@moalif_backup');
   const [autoBackup, setAutoBackup] = useState(false);
-  const [backupFrequency, setBackupFrequency] = useState('daily');
+  const [backupFrequency, setBackupFrequency] = useState<BackupFrequency>('daily');
   const [fontFamily, setFontFamily] = useState('Amiri');
-  const [fontSize, setFontSize] = useState('medium');
+  const [fontSize, setFontSize] = useState<FontSize>('medium');
 
   // UI state
-  const [activeTab, setActiveTab] = useState('general');
+  const [activeTab, setActiveTab] = useState<TabId>('general');
   const [isLoading, setIsLoading] = useState(false);
   const [showFontModal, setShowFontModal] = useState(false);
   const [showFontSizeModal, setShowFontSizeModal] = useState(false);
   const [showThemeModal, setShowThemeModal] = useState(false);
-  const [selectedTheme, setSelectedTheme] = useState('classic');
+  const [selectedTheme, setSelectedTheme] = useState<ThemeId>('classic');
   
   // Animation values
   const scrollX = useRef(new Animated.Value(0)).current;
@@ -77,7 +124,7 @@ export default function SettingsScreen() {
   }, [activeTab]);
   
   // Available fonts
-  const availableFonts = [
+  const availableFonts: Font[] = [
     { id: 'Amiri', name: 'أميري' },
     { id: 'Cairo', name: 'القاهرة' },
     { id: 'Tajawal', name: 'تجوال' },
@@ -88,7 +135,7 @@ export default function SettingsScreen() {
   ];
   
   // Font sizes
-  const fontSizes = [
+  const fontSizes: FontSizeOption[] = [
     { id: 'small', name: 'صغير' },
     { id: 'medium', name: 'متوسط' },
     { id: 'large', name: 'كبير' },
@@ -96,7 +143,7 @@ export default function SettingsScreen() {
   ];
 
   // Available themes
-  const availableThemes = [
+  const availableThemes: Theme[] = [
     { id: 'classic', name: 'كلاسيكي', color: '#8B4513' },
     { id: 'modern', name: 'عصري', color: '#3498db' },
     { id: 'dark', name: 'داكن', color: '#2c3e50' },
@@ -268,28 +315,34 @@ export default function SettingsScreen() {
   };
 
   // Function to change font
-  const changeFont = (fontId) => {
+  const changeFont = (fontId: string) => {
     setFontFamily(fontId);
     setShowFontModal(false);
-    toast.success(`تم تغيير الخط إلى ${availableFonts.find(font => font.id === fontId).name}`);
+    toast.success(`تم تغيير الخط إلى ${availableFonts.find(font => font.id === fontId)?.name}`);
   };
 
   // Function to change font size
-  const changeFontSize = (sizeId) => {
+  const changeFontSize = (sizeId: FontSize) => {
     setFontSize(sizeId);
     setShowFontSizeModal(false);
-    toast.success(`تم تغيير حجم الخط إلى ${fontSizes.find(size => size.id === sizeId).name}`);
+    const selectedSize = fontSizes.find(size => size.id === sizeId);
+    if (selectedSize) {
+      toast.success(`تم تغيير حجم الخط إلى ${selectedSize.name}`);
+    }
   };
 
   // Function to change theme
-  const changeTheme = (themeId) => {
+  const changeTheme = (themeId: ThemeId) => {
     setSelectedTheme(themeId);
     setShowThemeModal(false);
-    toast.success(`تم تغيير التصميم إلى ${availableThemes.find(theme => theme.id === themeId).name}`);
+    const selectedTheme = availableThemes.find(theme => theme.id === themeId);
+    if (selectedTheme) {
+      toast.success(`تم تغيير التصميم إلى ${selectedTheme.name}`);
+    }
   };
 
   // Function to toggle app lock
-  const toggleAppLock = (value) => {
+  const toggleAppLock = (value: boolean) => {
     if (value) {
       // إذا كان المستخدم يريد تفعيل قفل التطبيق
       Alert.alert(
@@ -440,7 +493,7 @@ export default function SettingsScreen() {
           </View>
           <View style={styles.fontPreviewContainer}>
             <Text style={[styles.fontPreview, darkMode && styles.darkText]}>
-              {fontSizes.find(size => size.id === fontSize).name}
+              {fontSizes.find(size => size.id === fontSize)?.name}
             </Text>
             <Ionicons name="chevron-forward" size={20} color={darkMode ? "#aaa" : "#666"} />
           </View>
@@ -458,7 +511,7 @@ export default function SettingsScreen() {
             <View 
               style={[
                 styles.themePreview, 
-                { backgroundColor: availableThemes.find(theme => theme.id === selectedTheme).color }
+                { backgroundColor: availableThemes.find(theme => theme.id === selectedTheme)?.color }
               ]} 
             />
             <Ionicons name="chevron-forward" size={20} color={darkMode ? "#aaa" : "#666"} />
@@ -468,198 +521,194 @@ export default function SettingsScreen() {
     );
   };
 
-  // Render security settings
-  const renderSecuritySettings = () => {
-    return (
-      <View style={styles.tabContent}>
-        <View style={[styles.settingItem, darkMode && styles.darkSettingItem]}>
-          <View style={styles.settingInfo}>
-            <Text style={[styles.settingTitle, darkMode && styles.darkText]}>قفل التطبيق</Text>
-            <Text style={[styles.settingDescription, darkMode && styles.darkSubText]}>حماية التطبيق برمز أو بصمة</Text>
-          </View>
-          <Switch
-            value={appLock}
-            onValueChange={toggleAppLock}
-            trackColor={{ false: '#ddd', true: '#3498db' }}
-            thumbColor={appLock ? '#fff' : '#fff'}
-            ios_backgroundColor="#3e3e3e"
-          />
+  // Function to render security settings
+  const renderSecuritySettings = () => (
+    <View style={styles.tabContent}>
+      <View style={[styles.settingItem, darkMode && styles.darkSettingItem]}>
+        <View style={styles.settingInfo}>
+          <Text style={[styles.settingTitle, darkMode && styles.darkText]}>قفل التطبيق</Text>
+          <Text style={[styles.settingDescription, darkMode && styles.darkSubText]}>حماية التطبيق برمز أو بصمة</Text>
         </View>
-
-        {appLock && (
-          <TouchableOpacity 
-            style={[styles.actionButton, styles.securityButton]}
-            onPress={changePin}
-          >
-            <MaterialIcons name="pin" size={18} color="#fff" style={styles.buttonIcon} />
-            <Text style={styles.actionButtonText}>تغيير رمز القفل</Text>
-          </TouchableOpacity>
-        )}
-
-        <TouchableOpacity 
-          style={[styles.actionButton, darkMode && styles.darkActionButton]}
-          onPress={confirmSignOut}
-        >
-          <Ionicons name="log-out-outline" size={18} color="#fff" style={styles.buttonIcon} />
-          <Text style={styles.actionButtonText}>تسجيل الخروج</Text>
-        </TouchableOpacity>
+        <Switch
+          value={appLock}
+          onValueChange={toggleAppLock}
+          trackColor={{ false: '#ddd', true: '#3498db' }}
+          thumbColor={appLock ? '#fff' : '#fff'}
+          ios_backgroundColor="#3e3e3e"
+        />
       </View>
-    );
-  };
 
-  // Render telegram settings
-  const renderTelegramSettings = () => {
-    return (
-      <View style={styles.tabContent}>
-        <View style={[styles.settingItem, darkMode && styles.darkSettingItem]}>
-          <View style={styles.settingInfo}>
-            <Text style={[styles.settingTitle, darkMode && styles.darkText]}>تفعيل النسخ الاحتياطي عبر تليجرام</Text>
-            <Text style={[styles.settingDescription, darkMode && styles.darkSubText]}>إرسال نسخ احتياطية من كتبك إلى قناة تليجرام</Text>
-          </View>
-          <Switch
-            value={telegramEnabled}
-            onValueChange={setTelegramEnabled}
-            trackColor={{ false: '#ddd', true: '#3498db' }}
-            thumbColor={telegramEnabled ? '#fff' : '#fff'}
-            ios_backgroundColor="#3e3e3e"
-          />
+      {appLock && (
+        <TouchableOpacity 
+          style={[styles.actionButton, styles.securityButton]}
+          onPress={changePin}
+        >
+          <Ionicons name={ACTION_ICONS.pin} size={18} color="#fff" style={styles.buttonIcon} />
+          <Text style={styles.actionButtonText}>تغيير رمز القفل</Text>
+        </TouchableOpacity>
+      )}
+
+      <TouchableOpacity 
+        style={[styles.actionButton, darkMode && styles.darkActionButton]}
+        onPress={confirmSignOut}
+      >
+        <Ionicons name="log-out-outline" size={18} color="#fff" style={styles.buttonIcon} />
+        <Text style={styles.actionButtonText}>تسجيل الخروج</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  // Function to render telegram settings
+  const renderTelegramSettings = () => (
+    <View style={styles.tabContent}>
+      <View style={[styles.settingItem, darkMode && styles.darkSettingItem]}>
+        <View style={styles.settingInfo}>
+          <Text style={[styles.settingTitle, darkMode && styles.darkText]}>تفعيل النسخ الاحتياطي عبر تليجرام</Text>
+          <Text style={[styles.settingDescription, darkMode && styles.darkSubText]}>إرسال نسخ احتياطية من كتبك إلى قناة تليجرام</Text>
         </View>
+        <Switch
+          value={telegramEnabled}
+          onValueChange={setTelegramEnabled}
+          trackColor={{ false: '#ddd', true: '#3498db' }}
+          thumbColor={telegramEnabled ? '#fff' : '#fff'}
+          ios_backgroundColor="#3e3e3e"
+        />
+      </View>
 
-        {telegramEnabled && (
-          <>
-            <View style={[styles.settingItem, darkMode && styles.darkSettingItem]}>
-              <View style={styles.settingInfo}>
-                <Text style={[styles.settingTitle, darkMode && styles.darkText]}>بوت تليجرام</Text>
-                <Text style={[styles.settingDescription, darkMode && styles.darkSubText]}>اسم بوت تليجرام للنسخ الاحتياطي</Text>
-              </View>
-              <View style={styles.telegramInputContainer}>
-                <TextInput
-                  style={[styles.telegramInput, darkMode && styles.darkTelegramInput]}
-                  value={telegramBot}
-                  onChangeText={setTelegramBot}
-                  placeholder="@moalif_bot"
-                  placeholderTextColor={darkMode ? "#777" : "#999"}
-                />
-                <TouchableOpacity style={styles.telegramLinkButton} onPress={openTelegramBot}>
-                  <Ionicons name="open-outline" size={18} color="#3498db" />
-                </TouchableOpacity>
-              </View>
+      {telegramEnabled && (
+        <>
+          <View style={[styles.settingItem, darkMode && styles.darkSettingItem]}>
+            <View style={styles.settingInfo}>
+              <Text style={[styles.settingTitle, darkMode && styles.darkText]}>بوت تليجرام</Text>
+              <Text style={[styles.settingDescription, darkMode && styles.darkSubText]}>اسم بوت تليجرام للنسخ الاحتياطي</Text>
             </View>
-
-            <View style={[styles.settingItem, darkMode && styles.darkSettingItem]}>
-              <View style={styles.settingInfo}>
-                <Text style={[styles.settingTitle, darkMode && styles.darkText]}>قناة النسخ الاحتياطي</Text>
-                <Text style={[styles.settingDescription, darkMode && styles.darkSubText]}>قناة تليجرام لحفظ النسخ الاحتياطية</Text>
-              </View>
-              <View style={styles.telegramInputContainer}>
-                <TextInput
-                  style={[styles.telegramInput, darkMode && styles.darkTelegramInput]}
-                  value={telegramChannel}
-                  onChangeText={setTelegramChannel}
-                  placeholder="@moalif_backup"
-                  placeholderTextColor={darkMode ? "#777" : "#999"}
-                />
-                <TouchableOpacity style={styles.telegramLinkButton} onPress={openTelegramChannel}>
-                  <Ionicons name="open-outline" size={18} color="#3498db" />
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            <View style={[styles.settingItem, darkMode && styles.darkSettingItem]}>
-              <View style={styles.settingInfo}>
-                <Text style={[styles.settingTitle, darkMode && styles.darkText]}>نسخ احتياطي تلقائي</Text>
-                <Text style={[styles.settingDescription, darkMode && styles.darkSubText]}>إرسال نسخ احتياطية تلقائي بشكل دوري</Text>
-              </View>
-              <Switch
-                value={autoBackup}
-                onValueChange={setAutoBackup}
-                trackColor={{ false: '#ddd', true: '#3498db' }}
-                thumbColor={autoBackup ? '#fff' : '#fff'}
-                ios_backgroundColor="#3e3e3e"
+            <View style={styles.telegramInputContainer}>
+              <TextInput
+                style={[styles.telegramInput, darkMode && styles.darkTelegramInput]}
+                value={telegramBot}
+                onChangeText={setTelegramBot}
+                placeholder="@moalif_bot"
+                placeholderTextColor={darkMode ? "#777" : "#999"}
               />
+              <TouchableOpacity style={styles.telegramLinkButton} onPress={openTelegramBot}>
+                <Ionicons name="open-outline" size={18} color="#3498db" />
+              </TouchableOpacity>
             </View>
+          </View>
 
-            {autoBackup && (
-              <View style={[styles.settingItem, darkMode && styles.darkSettingItem]}>
-                <View style={styles.settingInfo}>
-                  <Text style={[styles.settingTitle, darkMode && styles.darkText]}>تكرار النسخ الاحتياطي</Text>
-                  <Text style={[styles.settingDescription, darkMode && styles.darkSubText]}>تحديد وتيرة النسخ الاحتياطي التلقائي</Text>
-                </View>
-                <View style={styles.frequencyContainer}>
-                  <TouchableOpacity 
-                    style={[
-                      styles.frequencyButton, 
-                      backupFrequency === 'daily' && styles.activeFrequency,
-                      darkMode && styles.darkFrequencyButton,
-                      backupFrequency === 'daily' && darkMode && styles.darkActiveFrequency
-                    ]}
-                    onPress={() => setBackupFrequency('daily')}
-                  >
-                    <Text style={[
-                      styles.frequencyText, 
-                      backupFrequency === 'daily' && styles.activeFrequencyText,
-                      darkMode && styles.darkFrequencyText,
-                      backupFrequency === 'daily' && darkMode && styles.darkActiveFrequencyText
-                    ]}>يومي</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity 
-                    style={[
-                      styles.frequencyButton, 
-                      backupFrequency === 'weekly' && styles.activeFrequency,
-                      darkMode && styles.darkFrequencyButton,
-                      backupFrequency === 'weekly' && darkMode && styles.darkActiveFrequency
-                    ]}
-                    onPress={() => setBackupFrequency('weekly')}
-                  >
-                    <Text style={[
-                      styles.frequencyText, 
-                      backupFrequency === 'weekly' && styles.activeFrequencyText,
-                      darkMode && styles.darkFrequencyText,
-                      backupFrequency === 'weekly' && darkMode && styles.darkActiveFrequencyText
-                    ]}>أسبوعي</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity 
-                    style={[
-                      styles.frequencyButton, 
-                      backupFrequency === 'monthly' && styles.activeFrequency,
-                      darkMode && styles.darkFrequencyButton,
-                      backupFrequency === 'monthly' && darkMode && styles.darkActiveFrequency
-                    ]}
-                    onPress={() => setBackupFrequency('monthly')}
-                  >
-                    <Text style={[
-                      styles.frequencyText, 
-                      backupFrequency === 'monthly' && styles.activeFrequencyText,
-                      darkMode && styles.darkFrequencyText,
-                      backupFrequency === 'monthly' && darkMode && styles.darkActiveFrequencyText
-                    ]}>شهري</Text>
-                  </TouchableOpacity>
-                </View>
+          <View style={[styles.settingItem, darkMode && styles.darkSettingItem]}>
+            <View style={styles.settingInfo}>
+              <Text style={[styles.settingTitle, darkMode && styles.darkText]}>قناة النسخ الاحتياطي</Text>
+              <Text style={[styles.settingDescription, darkMode && styles.darkSubText]}>قناة تليجرام لحفظ النسخ الاحتياطية</Text>
+            </View>
+            <View style={styles.telegramInputContainer}>
+              <TextInput
+                style={[styles.telegramInput, darkMode && styles.darkTelegramInput]}
+                value={telegramChannel}
+                onChangeText={setTelegramChannel}
+                placeholder="@moalif_backup"
+                placeholderTextColor={darkMode ? "#777" : "#999"}
+              />
+              <TouchableOpacity style={styles.telegramLinkButton} onPress={openTelegramChannel}>
+                <Ionicons name="open-outline" size={18} color="#3498db" />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View style={[styles.settingItem, darkMode && styles.darkSettingItem]}>
+            <View style={styles.settingInfo}>
+              <Text style={[styles.settingTitle, darkMode && styles.darkText]}>نسخ احتياطي تلقائي</Text>
+              <Text style={[styles.settingDescription, darkMode && styles.darkSubText]}>إرسال نسخ احتياطية تلقائي بشكل دوري</Text>
+            </View>
+            <Switch
+              value={autoBackup}
+              onValueChange={setAutoBackup}
+              trackColor={{ false: '#ddd', true: '#3498db' }}
+              thumbColor={autoBackup ? '#fff' : '#fff'}
+              ios_backgroundColor="#3e3e3e"
+            />
+          </View>
+
+          {autoBackup && (
+            <View style={[styles.settingItem, darkMode && styles.darkSettingItem]}>
+              <View style={styles.settingInfo}>
+                <Text style={[styles.settingTitle, darkMode && styles.darkText]}>تكرار النسخ الاحتياطي</Text>
+                <Text style={[styles.settingDescription, darkMode && styles.darkSubText]}>تحديد وتيرة النسخ الاحتياطي التلقائي</Text>
               </View>
-            )}
+              <View style={styles.frequencyContainer}>
+                <TouchableOpacity 
+                  style={[
+                    styles.frequencyButton, 
+                    backupFrequency === 'daily' && styles.activeFrequency,
+                    darkMode && styles.darkFrequencyButton,
+                    backupFrequency === 'daily' && darkMode && styles.darkActiveFrequency
+                  ]}
+                  onPress={() => setBackupFrequency('daily')}
+                >
+                  <Text style={[
+                    styles.frequencyText, 
+                    backupFrequency === 'daily' && styles.activeFrequencyText,
+                    darkMode && styles.darkFrequencyText,
+                    backupFrequency === 'daily' && darkMode && styles.darkActiveFrequencyText
+                  ]}>يومي</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={[
+                    styles.frequencyButton, 
+                    backupFrequency === 'weekly' && styles.activeFrequency,
+                    darkMode && styles.darkFrequencyButton,
+                    backupFrequency === 'weekly' && darkMode && styles.darkActiveFrequency
+                  ]}
+                  onPress={() => setBackupFrequency('weekly')}
+                >
+                  <Text style={[
+                    styles.frequencyText, 
+                    backupFrequency === 'weekly' && styles.activeFrequencyText,
+                    darkMode && styles.darkFrequencyText,
+                    backupFrequency === 'weekly' && darkMode && styles.darkActiveFrequencyText
+                  ]}>أسبوعي</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={[
+                    styles.frequencyButton, 
+                    backupFrequency === 'monthly' && styles.activeFrequency,
+                    darkMode && styles.darkFrequencyButton,
+                    backupFrequency === 'monthly' && darkMode && styles.darkActiveFrequency
+                  ]}
+                  onPress={() => setBackupFrequency('monthly')}
+                >
+                  <Text style={[
+                    styles.frequencyText, 
+                    backupFrequency === 'monthly' && styles.activeFrequencyText,
+                    darkMode && styles.darkFrequencyText,
+                    backupFrequency === 'monthly' && darkMode && styles.darkActiveFrequencyText
+                  ]}>شهري</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
 
-            <TouchableOpacity 
-              style={[styles.actionButton, styles.telegramButton]}
-              onPress={backupToTelegram}
-            >
-              <FontAwesome5 name="telegram-plane" size={18} color="#fff" style={styles.buttonIcon} />
-              <Text style={styles.actionButtonText}>إرسال نسخة احتياطية الآن</Text>
-            </TouchableOpacity>
-          </>
-        )}
-
-        {!telegramEnabled && (
           <TouchableOpacity 
             style={[styles.actionButton, styles.telegramButton]}
-            onPress={connectTelegram}
+            onPress={backupToTelegram}
           >
-            <FontAwesome5 name="telegram-plane" size={18} color="#fff" style={styles.buttonIcon} />
-            <Text style={styles.actionButtonText}>ربط حساب تليجرام</Text>
+            <Ionicons name={ACTION_ICONS.backup} size={18} color="#fff" style={styles.buttonIcon} />
+            <Text style={styles.actionButtonText}>إرسال نسخة احتياطية الآن</Text>
           </TouchableOpacity>
-        )}
-      </View>
-    );
-  };
+        </>
+      )}
+
+      {!telegramEnabled && (
+        <TouchableOpacity 
+          style={[styles.actionButton, styles.telegramButton]}
+          onPress={connectTelegram}
+        >
+          <Ionicons name={ACTION_ICONS.connect} size={18} color="#fff" style={styles.buttonIcon} />
+          <Text style={styles.actionButtonText}>ربط حساب تليجرام</Text>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
 
   // Render about settings
   const renderAboutSettings = () => {
@@ -679,19 +728,19 @@ export default function SettingsScreen() {
               style={styles.socialButton}
               onPress={() => Linking.openURL('https://t.me/moalif')}
             >
-              <FontAwesome5 name="telegram-plane" size={20} color="#0088cc" />
+              <Ionicons name={SOCIAL_ICONS.telegram} size={20} color="#0088cc" />
             </TouchableOpacity>
             <TouchableOpacity 
               style={styles.socialButton}
               onPress={() => Linking.openURL('https://twitter.com/moalif')}
             >
-              <FontAwesome5 name="twitter" size={20} color="#1DA1F2" />
+              <Ionicons name={SOCIAL_ICONS.twitter} size={20} color="#1DA1F2" />
             </TouchableOpacity>
             <TouchableOpacity 
               style={styles.socialButton}
               onPress={() => Linking.openURL('https://instagram.com/moalif')}
             >
-              <FontAwesome5 name="instagram" size={20} color="#E1306C" />
+              <Ionicons name={SOCIAL_ICONS.instagram} size={20} color="#E1306C" />
             </TouchableOpacity>
           </View>
         </View>

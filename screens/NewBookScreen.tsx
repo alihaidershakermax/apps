@@ -14,12 +14,39 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { toast } from 'sonner-native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList, MaterialIconName } from '../types';
 
 // Get screen dimensions
 const { width } = Dimensions.get('window');
 
+interface BookStyle {
+  id: string;
+  name: string;
+  color: string;
+  icon: MaterialIconName;
+}
+
+interface BookColor {
+  id: string;
+  name: string;
+  color: string;
+}
+
+interface PaperType {
+  id: string;
+  name: string;
+  color: string;
+}
+
+interface FontType {
+  id: string;
+  name: string;
+  fontFamily: string;
+}
+
 // Book styles
-const bookStyles = [
+const bookStyles: BookStyle[] = [
   { id: 'classic', name: 'كلاسيكي', color: '#8e44ad', icon: 'book' },
   { id: 'vintage', name: 'قديم', color: '#d35400', icon: 'book-open-page-variant' },
   { id: 'military', name: 'عسكري', color: '#27ae60', icon: 'shield' },
@@ -29,7 +56,7 @@ const bookStyles = [
 ];
 
 // Book colors
-const bookColors = [
+const bookColors: BookColor[] = [
   { id: '1', name: 'أزرق', color: '#3498db' },
   { id: '2', name: 'أحمر', color: '#e74c3c' },
   { id: '3', name: 'أخضر', color: '#2ecc71' },
@@ -42,7 +69,7 @@ const bookColors = [
 ];
 
 // Paper types
-const paperTypes = [
+const paperTypes: PaperType[] = [
   { id: 'white', name: 'أبيض', color: '#ffffff' },
   { id: 'ivory', name: 'عاجي', color: '#fffff0' },
   { id: 'cream', name: 'كريمي', color: '#faf0e6' },
@@ -51,7 +78,7 @@ const paperTypes = [
 ];
 
 // Font types
-const fontTypes = [
+const fontTypes: FontType[] = [
   { id: 'traditional', name: 'تقليدي', fontFamily: 'serif' },
   { id: 'modern', name: 'حديث', fontFamily: 'sans-serif' },
   { id: 'handwritten', name: 'خط يدوي', fontFamily: 'cursive' },
@@ -59,15 +86,17 @@ const fontTypes = [
   { id: 'simple', name: 'بسيط', fontFamily: 'sans-serif' },
 ];
 
+type NewBookScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'NewBook'>;
+
 export default function NewBookScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NewBookScreenNavigationProp>();
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
-  const [selectedStyle, setSelectedStyle] = useState(bookStyles[0]);
-  const [selectedColor, setSelectedColor] = useState(bookColors[0]);
-  const [selectedPaper, setSelectedPaper] = useState(paperTypes[0]);
-  const [selectedFont, setSelectedFont] = useState(fontTypes[0]);
-  const [coverImage, setCoverImage] = useState(null);
+  const [selectedStyle, setSelectedStyle] = useState<BookStyle>(bookStyles[0]);
+  const [selectedColor, setSelectedColor] = useState<BookColor>(bookColors[0]);
+  const [selectedPaper, setSelectedPaper] = useState<PaperType>(paperTypes[0]);
+  const [selectedFont, setSelectedFont] = useState<FontType>(fontTypes[0]);
+  const [coverImage, setCoverImage] = useState<string | null>(null);
   const [isGeneratingCover, setIsGeneratingCover] = useState(false);
 
   // Function to generate cover image
@@ -108,7 +137,7 @@ export default function NewBookScreen() {
   };
 
   // Function to render style item
-  const renderStyleItem = ({ item }) => (
+  const renderStyleItem = ({ item }: { item: BookStyle }) => (
     <TouchableOpacity 
       style={[
         styles.styleItem,
@@ -122,7 +151,7 @@ export default function NewBookScreen() {
   );
 
   // Function to render color item
-  const renderColorItem = ({ item }) => (
+  const renderColorItem = ({ item }: { item: BookColor }) => (
     <TouchableOpacity 
       style={[
         styles.colorItem,
@@ -136,7 +165,7 @@ export default function NewBookScreen() {
   );
 
   // Function to render paper type item
-  const renderPaperItem = ({ item }) => (
+  const renderPaperItem = ({ item }: { item: PaperType }) => (
     <TouchableOpacity 
       style={[
         styles.paperItem,
@@ -155,7 +184,7 @@ export default function NewBookScreen() {
   );
 
   // Function to render font type item
-  const renderFontItem = ({ item }) => (
+  const renderFontItem = ({ item }: { item: FontType }) => (
     <TouchableOpacity 
       style={[
         styles.fontItem,

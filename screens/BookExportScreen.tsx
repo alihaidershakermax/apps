@@ -1,119 +1,51 @@
 import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  ScrollView, 
-  Image,
-  Switch,
-  ActivityIndicator
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Switch, SafeAreaView, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { toast } from 'sonner-native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RouteProp } from '@react-navigation/native';
+import { RootStackParamList, Book, ExportFormat, ExportDestination, IonIconName } from '../types';
 
-// Sample book data
-const bookData = {
-  '1': {
-    id: '1',
-    title: 'رحلة الحياة',
-    author: 'أنت',
-    coverColor: '#3498db',
-    coverImage: 'https://api.a0.dev/assets/image?text=رحلة الحياة&aspect=2:3',
-    style: 'classic',
-    chapters: [
-      {
-        id: 'ch1',
-        title: 'الفصل الأول: البداية',
-        pages: [
-          { id: 'p1', title: 'البداية' },
-          { id: 'p2', title: 'التحول' },
-        ]
-      },
-      {
-        id: 'ch2',
-        title: 'الفصل الثاني: المواجهة',
-        pages: [
-          { id: 'p3', title: 'التحدي الأول' },
-        ]
-      }
-    ]
-  },
-  '2': {
-    id: '2',
-    title: 'ذكريات الطفولة',
-    author: 'أنت',
-    coverColor: '#e74c3c',
-    coverImage: 'https://api.a0.dev/assets/image?text=ذكريات الطفولة&aspect=2:3',
-    style: 'vintage',
-    chapters: [
-      {
-        id: 'ch1',
-        title: 'الفصل الأول: سنوات الطفولة المبكرة',
-        pages: [
-          { id: 'p1', title: 'ذكرى من الطفولة' },
-        ]
-      }
-    ]
-  },
-  '3': {
-    id: '3',
-    title: 'أيام الحرب',
-    author: 'أنت',
-    coverColor: '#2ecc71',
-    coverImage: 'https://api.a0.dev/assets/image?text=أيام الحرب&aspect=2:3',
-    style: 'military',
-    chapters: [
-      {
-        id: 'ch1',
-        title: 'الفصل الأول: بداية الحصار',
-        pages: [
-          { id: 'p1', title: 'يوم الحصار' },
-        ]
-      }
-    ]
-  }
-};
+type BookExportScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'BookExport'>;
+type BookExportScreenRouteProp = RouteProp<RootStackParamList, 'BookExport'>;
 
-// Export formats
-const exportFormats = [
-  { id: 'pdf', name: 'PDF', icon: 'document-text' },
-  { id: 'epub', name: 'EPUB', icon: 'book' },
-  { id: 'docx', name: 'Word', icon: 'document' },
-  { id: 'txt', name: 'نص عادي', icon: 'document-text-outline' },
+// Define the export formats
+const exportFormats: ExportFormat[] = [
+  { id: 'pdf', name: 'PDF', icon: 'document-outline' },
+  { id: 'epub', name: 'EPUB', icon: 'book-outline' },
+  { id: 'docx', name: 'Word', icon: 'document-text-outline' },
+  { id: 'txt', name: 'نص عادي', icon: 'text-outline' },
 ];
 
-// Export destinations
-const exportDestinations = [
-  { id: 'download', name: 'تنزيل', icon: 'download' },
-  { id: 'email', name: 'إرسال بالبريد', icon: 'mail' },
-  { id: 'telegram', name: 'تليجرام', icon: 'paper-plane' },
-  { id: 'drive', name: 'Google Drive', icon: 'cloud-upload' },
+// Define the export destinations
+const exportDestinations: ExportDestination[] = [
+  { id: 'download', name: 'تنزيل', icon: 'download-outline' },
+  { id: 'email', name: 'إرسال بالبريد', icon: 'mail-outline' },
+  { id: 'telegram', name: 'تليجرام', icon: 'paper-plane-outline' },
+  { id: 'drive', name: 'Google Drive', icon: 'cloud-upload-outline' },
 ];
+
+// Import the book data
+import { bookData } from '../data/books';
 
 export default function BookExportScreen() {
-  const navigation = useNavigation();
-  const route = useRoute();
-  const { bookId } = route.params || { bookId: '1' };
+  const navigation = useNavigation<BookExportScreenNavigationProp>();
+  const route = useRoute<BookExportScreenRouteProp>();
+  const { bookId } = route.params;
   
-  const book = bookData[bookId];
-  const [selectedFormat, setSelectedFormat] = useState('pdf');
-  const [selectedDestination, setSelectedDestination] = useState('download');
-  const [includeImages, setIncludeImages] = useState(true);
-  const [includeCover, setIncludeCover] = useState(true);
-  const [includeTableOfContents, setIncludeTableOfContents] = useState(true);
-  const [includePageNumbers, setIncludePageNumbers] = useState(true);
-  const [isExporting, setIsExporting] = useState(false);
+  const book = bookData[bookId] as Book;
+  const [selectedFormat, setSelectedFormat] = useState<string>('pdf');
+  const [selectedDestination, setSelectedDestination] = useState<string>('download');
+  const [includeImages, setIncludeImages] = useState<boolean>(true);
+  const [includeCover, setIncludeCover] = useState<boolean>(true);
+  const [includeTableOfContents, setIncludeTableOfContents] = useState<boolean>(true);
+  const [includePageNumbers, setIncludePageNumbers] = useState<boolean>(true);
+  const [isExporting, setIsExporting] = useState<boolean>(false);
 
   // Function to count total pages in the book
   const countTotalPages = () => {
-    let count = 0;
-    book.chapters.forEach(chapter => {
-      count += chapter.pages.length;
-    });
-    return count;
+    return book.chapters.reduce((count, chapter) => count + chapter.pages.length, 0);
   };
 
   // Function to export the book
@@ -123,7 +55,10 @@ export default function BookExportScreen() {
     // Simulate export process
     setTimeout(() => {
       setIsExporting(false);
-      toast.success(`تم تصدير الكتاب بنجاح بصيغة ${exportFormats.find(f => f.id === selectedFormat).name}`);
+      const format = exportFormats.find(f => f.id === selectedFormat);
+      if (format) {
+        toast.success(`تم تصدير الكتاب بنجاح بصيغة ${format.name}`);
+      }
       
       if (selectedDestination === 'download') {
         toast.info('تم حفظ الملف في مجلد التنزيلات');
@@ -296,7 +231,7 @@ export default function BookExportScreen() {
           <Text style={styles.sectionTitle}>معاينة</Text>
           <View style={styles.previewContainer}>
             <Image 
-              source={{ uri: `https://api.a0.dev/assets/image?text=معاينة ${book.title} بصيغة ${exportFormats.find(f => f.id === selectedFormat).name}&aspect=16:9` }} 
+              source={{ uri: `https://api.a0.dev/assets/image?text=معاينة ${book.title} بصيغة ${exportFormats.find(f => f.id === selectedFormat)?.name}&aspect=16:9` }} 
               style={styles.previewImage}
               resizeMode="cover"
             />
@@ -312,13 +247,11 @@ export default function BookExportScreen() {
           disabled={isExporting}
         >
           {isExporting ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator size="small" color="#fff" />
           ) : (
             <>
-              <Ionicons name="download" size={20} color="#fff" style={styles.exportIcon} />
-              <Text style={styles.exportButtonText}>
-                تصدير الكتاب بصيغة {exportFormats.find(f => f.id === selectedFormat).name}
-              </Text>
+              <Ionicons name="cloud-upload-outline" size={20} color="#fff" />
+              <Text style={styles.exportButtonText}>تصدير الكتاب</Text>
             </>
           )}
         </TouchableOpacity>
