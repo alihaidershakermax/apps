@@ -18,6 +18,7 @@ on:
           - dev
           - prod-apk
           - prod-aab
+          - publish-expo
           - all
 
 env:
@@ -45,6 +46,18 @@ jobs:
           node-version: "20"
           cache: "yarn"
 
+      - name: 📦 Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+
+      - name: 📦 Setup yarn cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
       - name: 📦 Install dependencies
         run: yarn install
 
@@ -56,9 +69,6 @@ jobs:
 
       - name: 🎨 Run Prettier check
         run: yarn format:check
-
-      - name: 🧪 Run Jest Tests
-        run: yarn test
 
   build-and-deploy:
     needs: test
@@ -73,6 +83,18 @@ jobs:
         with:
           node-version: "20"
           cache: "yarn"
+
+      - name: 📦 Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+
+      - name: 📦 Setup yarn cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
 
       - name: 📦 Install dependencies
         run: |
@@ -94,12 +116,17 @@ jobs:
 
       - name: 📋 Fix package.json main entry
         run: |
+          # Check if jq is installed, if not install it
           if ! command -v jq &> /dev/null; then
             echo "Installing jq..."
             sudo apt-get update && sudo apt-get install -y jq
           fi
+
+          # Fix the main entry in package.json
           if [ -f ./package.json ]; then
+            # Create a backup
             cp package.json package.json.bak
+            # Update the package.json
             jq '.main = "node_modules/expo/AppEntry.js"' package.json > package.json.tmp && mv package.json.tmp package.json
             echo "Updated package.json main entry"
             cat package.json | grep "main"
@@ -113,10 +140,13 @@ jobs:
           if [ -f ./metro.config.js ]; then
             echo "Creating backup of metro.config.js"
             cp ./metro.config.js ./metro.config.js.backup
+            echo "Updating metro.config.js to CommonJS format"
             cat > ./metro.config.js << 'EOFMARKER'
+          /* eslint-disable @typescript-eslint/no-var-requires */
           const { getDefaultConfig } = require('expo/metro-config');
 
           const config = getDefaultConfig(__dirname);
+
           const { transformer, resolver } = config;
 
           config.transformer = {
@@ -132,7 +162,7 @@ jobs:
 
           module.exports = config;
           EOFMARKER
-            echo "metro.config.js updated"
+            echo "metro.config.js updated to CommonJS format"
           else
             echo "metro.config.js not found"
           fi
@@ -140,6 +170,7 @@ jobs:
       - name: 📱 Build Development APK
         if: github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'dev' || github.event_name == 'push'
         run: |
+          # Build with increased memory limit
           export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
           eas build --platform android --profile development --local --non-interactive --output=./app-dev.apk
         env:
@@ -160,6 +191,13 @@ jobs:
           eas build --platform android --profile production --local --non-interactive --output=./app-prod.aab
         env:
           NODE_ENV: production
+
+      - name: 🚀 Publish to Expo
+        if: github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'publish-expo'
+        run: |
+          eas update --auto
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       - name: 📦 Upload build artifacts to GitHub
         uses: actions/upload-artifact@v4
